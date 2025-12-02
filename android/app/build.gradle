@@ -1,0 +1,58 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.pangssi.restaurant'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.pangssi.restaurant"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        debug {
+            // 디버그 빌드: 로컬 서버 사용
+            buildConfigField "String", "WEB_URL", '"http://10.0.2.2:3000/restaurant"'
+        }
+        release {
+            // 릴리즈 빌드: 프로덕션 URL 사용
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "WEB_URL", '"https://your-domain.com/restaurant"'
+            // 서명 설정 (키스토어 파일이 있으면 주석 해제)
+            // signingConfig signingConfigs.release
+        }
+    }
+    
+    // 서명 설정 (릴리즈 빌드용)
+    // signingConfigs {
+    //     release {
+    //         storeFile file('../pangssi-restaurant.keystore')
+    //         storePassword System.getenv("KEYSTORE_PASSWORD") ?: 'your_keystore_password'
+    //         keyAlias 'pangssi'
+    //         keyPassword System.getenv("KEY_PASSWORD") ?: 'your_key_password'
+    //     }
+    // }
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    
+    // Temi SDK (테미 로봇 SDK 추가 필요)
+    // implementation files('libs/temi-sdk.jar')
+    // 또는 Maven/Gradle 저장소에서 추가
+    // implementation 'com.robotemi:sdk:1.0.0'
+}
+

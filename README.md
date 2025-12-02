@@ -2,6 +2,18 @@
 
 테미 로봇을 활용한 웹 기반 제어 및 관리 시스템
 
+## 🍽️ 식당 자리 안내 시스템
+
+테미 로봇을 활용한 식당 자리 안내 시스템입니다. 손님이 입장하면 인원 수를 입력하고, 자동으로 적절한 테이블을 배정하여 테미 로봇이 안내합니다.
+
+### 주요 기능
+
+- 👥 손님 인원 수 입력 및 자동 테이블 배정
+- 🗺️ 테이블 현황 실시간 표시 (4개 테이블)
+- 🤖 테미 로봇 자동 안내 (음성 + 이동)
+- 📊 테이블 사용 상태 관리
+- 🎯 최적 테이블 배정 알고리즘
+
 ## 📋 목차
 
 1. [테미 로봇 기본 설정](#테미-로봇-기본-설정)
@@ -137,16 +149,21 @@ temi/
 ├── package.json
 ├── README.md
 ├── docs/                   # 문서
-│   ├── temi-setup.md      # 테미 설정 가이드
-│   └── api-reference.md   # API 참조 문서
-├── prisma/                 # 데이터베이스 스키마 (필요시)
-│   └── schema.prisma
+│   ├── temi-setup-guide.md # 테미 설정 가이드
+│   ├── api-reference.md    # API 참조 문서
+│   └── adb-connection-guide.md # ADB 연결 가이드
 ├── src/                    # 소스 코드
 │   ├── app/               # Next.js App Router
+│   │   ├── page.tsx       # 메인 페이지 (로봇 제어)
+│   │   └── restaurant/   # 식당 자리 안내 페이지
 │   ├── components/        # React 컴포넌트
+│   │   └── RestaurantGuide.tsx
 │   ├── lib/               # 유틸리티 함수
-│   │   └── temi-api.ts    # 테미 API 클라이언트
+│   │   ├── temi-api.ts    # 테미 API 클라이언트
+│   │   ├── temi-api-mock.ts # 테미 API 모의 클라이언트
+│   │   └── restaurant-data.ts # 식당 테이블 데이터
 │   └── types/             # TypeScript 타입 정의
+│       └── restaurant.ts
 └── public/                 # 정적 파일
 ```
 

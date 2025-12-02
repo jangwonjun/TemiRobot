@@ -63,10 +63,27 @@ class TemiApiClient {
    */
   async getRobotStatus(): Promise<TemiRobotStatus> {
     try {
-      const url = this.config.robotIp
-        ? `http://${this.config.robotIp}:${this.config.robotPort}/api/status`
-        : `${this.config.apiUrl}/robots/${this.config.robotId}/status`;
+      // 로컬 IP가 설정되어 있으면 로컬 API 사용
+      if (this.config.robotIp) {
+        const url = `http://${this.config.robotIp}:${this.config.robotPort}/api/status`;
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: this.getHeaders(),
+        });
 
+        if (!response.ok) {
+          throw new Error(`API 요청 실패: ${response.statusText}`);
+        }
+
+        return await response.json();
+      }
+
+      // 클라우드 API 사용 시 robotId 필수
+      if (!this.config.robotId) {
+        throw new Error('로봇 ID가 설정되지 않았습니다. 환경 변수 TEMI_ROBOT_ID를 설정하거나 모의 모드를 사용하세요.');
+      }
+
+      const url = `${this.config.apiUrl}/robots/${this.config.robotId}/status`;
       const response = await fetch(url, {
         method: 'GET',
         headers: this.getHeaders(),
@@ -88,10 +105,27 @@ class TemiApiClient {
    */
   async moveToLocation(locationId: string): Promise<void> {
     try {
-      const url = this.config.robotIp
-        ? `http://${this.config.robotIp}:${this.config.robotPort}/api/navigate`
-        : `${this.config.apiUrl}/robots/${this.config.robotId}/navigate`;
+      if (this.config.robotIp) {
+        const url = `http://${this.config.robotIp}:${this.config.robotPort}/api/navigate`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({
+            locationId,
+          }),
+        });
 
+        if (!response.ok) {
+          throw new Error(`이동 명령 실패: ${response.statusText}`);
+        }
+        return;
+      }
+
+      if (!this.config.robotId) {
+        throw new Error('로봇 ID가 설정되지 않았습니다.');
+      }
+
+      const url = `${this.config.apiUrl}/robots/${this.config.robotId}/navigate`;
       const response = await fetch(url, {
         method: 'POST',
         headers: this.getHeaders(),
@@ -114,10 +148,24 @@ class TemiApiClient {
    */
   async stop(): Promise<void> {
     try {
-      const url = this.config.robotIp
-        ? `http://${this.config.robotIp}:${this.config.robotPort}/api/stop`
-        : `${this.config.apiUrl}/robots/${this.config.robotId}/stop`;
+      if (this.config.robotIp) {
+        const url = `http://${this.config.robotIp}:${this.config.robotPort}/api/stop`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: this.getHeaders(),
+        });
 
+        if (!response.ok) {
+          throw new Error(`정지 명령 실패: ${response.statusText}`);
+        }
+        return;
+      }
+
+      if (!this.config.robotId) {
+        throw new Error('로봇 ID가 설정되지 않았습니다.');
+      }
+
+      const url = `${this.config.apiUrl}/robots/${this.config.robotId}/stop`;
       const response = await fetch(url, {
         method: 'POST',
         headers: this.getHeaders(),
@@ -137,10 +185,27 @@ class TemiApiClient {
    */
   async speak(text: string): Promise<void> {
     try {
-      const url = this.config.robotIp
-        ? `http://${this.config.robotIp}:${this.config.robotPort}/api/speak`
-        : `${this.config.apiUrl}/robots/${this.config.robotId}/speak`;
+      if (this.config.robotIp) {
+        const url = `http://${this.config.robotIp}:${this.config.robotPort}/api/speak`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({
+            text,
+          }),
+        });
 
+        if (!response.ok) {
+          throw new Error(`TTS 실패: ${response.statusText}`);
+        }
+        return;
+      }
+
+      if (!this.config.robotId) {
+        throw new Error('로봇 ID가 설정되지 않았습니다.');
+      }
+
+      const url = `${this.config.apiUrl}/robots/${this.config.robotId}/speak`;
       const response = await fetch(url, {
         method: 'POST',
         headers: this.getHeaders(),
@@ -163,10 +228,27 @@ class TemiApiClient {
    */
   async getLocations(): Promise<TemiLocation[]> {
     try {
-      const url = this.config.robotIp
-        ? `http://${this.config.robotIp}:${this.config.robotPort}/api/locations`
-        : `${this.config.apiUrl}/robots/${this.config.robotId}/locations`;
+      // 로컬 IP가 설정되어 있으면 로컬 API 사용
+      if (this.config.robotIp) {
+        const url = `http://${this.config.robotIp}:${this.config.robotPort}/api/locations`;
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: this.getHeaders(),
+        });
 
+        if (!response.ok) {
+          throw new Error(`위치 목록 조회 실패: ${response.statusText}`);
+        }
+
+        return await response.json();
+      }
+
+      // 클라우드 API 사용 시 robotId 필수
+      if (!this.config.robotId) {
+        throw new Error('로봇 ID가 설정되지 않았습니다. 환경 변수 TEMI_ROBOT_ID를 설정하거나 모의 모드를 사용하세요.');
+      }
+
+      const url = `${this.config.apiUrl}/robots/${this.config.robotId}/locations`;
       const response = await fetch(url, {
         method: 'GET',
         headers: this.getHeaders(),
