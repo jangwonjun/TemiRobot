@@ -2,7 +2,7 @@
 
 export default function AutoReturnPage() {
   return (
-    <div className="torder-background" style={{
+    <div className="hanji-background" style={{
       width: '100%',
       height: '100vh',
       display: 'flex',
@@ -11,26 +11,32 @@ export default function AutoReturnPage() {
       justifyContent: 'center',
       padding: '2rem'
     }}>
-      {/* 로고 */}
-      <div className="torder-logo" style={{ marginBottom: '2rem', fontSize: '2rem' }}>
-        팡씨네 할머니집
+      {/* 상단 타이틀 */}
+      <div style={{
+        fontSize: '2rem',
+        fontWeight: 'bold',
+        marginBottom: '3rem',
+        color: '#3e2723'
+      }}>
+        복귀 중
       </div>
 
       {/* 메인 박스 */}
-      <div className="torder-card" style={{
-        border: 'none',
-        borderRadius: '16px',
+      <div className="cream-paper" style={{
         padding: '4rem',
         width: '100%',
         maxWidth: '600px',
-        backgroundColor: '#fff',
         textAlign: 'center',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}>
         <div style={{
-          fontSize: '2.5rem',
+          fontSize: '3rem',
           fontWeight: 'bold',
-          color: '#2c3e50'
+          color: '#1a1a1a',
+          marginBottom: '1rem'
         }}>
           5초후 자동으로 돌아간데이
         </div>
@@ -40,11 +46,11 @@ export default function AutoReturnPage() {
       <div style={{
         marginTop: '3rem',
         fontSize: '1.5rem',
-        color: '#fff',
+        color: '#5d4037',
         fontWeight: 'bold',
         opacity: 0.8
       }}>
-        마지막 page.
+        원위치로 복귀 중...
       </div>
     </div>
   )

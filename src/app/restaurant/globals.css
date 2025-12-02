@@ -1,14 +1,14 @@
-/* T'order 스타일 테마 */
+/* T'order 스타일 테마 - 할머니집 컨셉 (CSS Recreation) */
+
+@import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Gowun+Batang&display=swap');
 
 :root {
-  --torder-dark-blue: #1a2332;
-  --torder-blue: #2d3e50;
-  --torder-red: #e74c3c;
-  --torder-red-light: #ff6b6b;
-  --torder-white: #ffffff;
-  --torder-gray: #ecf0f1;
-  --torder-text-dark: #2c3e50;
-  --torder-text-light: #7f8c8d;
+  --wood-dark: #3e2723;
+  --wood-light: #5d4037;
+  --paper-cream: #fff9c4;
+  --text-dark: #1a1a1a;
+  --sticker-red: #ff6b6b;
+  --hanji-bg: #fdfbf7;
 }
 
 * {
@@ -18,123 +18,182 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Gowun Batang', serif;
+  font-size: 18px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--wood-dark);
+  color: var(--text-dark);
 }
 
-/* T'order 배경 그라데이션 */
-.torder-background {
-  background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
+/* 1. 리얼한 나무 배경 (메인 페이지 배경) */
+.wood-background {
+  background-color: #4e342e;
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0, transparent 40px, rgba(0, 0, 0, 0.1) 40px, rgba(0, 0, 0, 0.1) 42px),
+    repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(0, 0, 0, 0.05) 2px, rgba(0, 0, 0, 0.05) 4px),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
   min-height: 100vh;
   width: 100%;
-}
-
-/* 팡씨네 할머니집 로고 스타일 */
-.torder-logo {
-  font-family: 'Arial', sans-serif;
-  font-weight: 700;
-  font-size: 2.5rem;
-  color: var(--torder-white);
-  letter-spacing: 1px;
   position: relative;
-  display: inline-block;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.7);
+  /* 비네팅 효과 */
 }
 
-/* 카드 스타일 */
-.torder-card {
-  background: var(--torder-white);
+/* 2. 한지 배경 (서브 페이지용) */
+.hanji-background {
+  background-color: var(--hanji-bg);
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* 3. 리얼한 종이 질감 (메인 컨텐츠 영역) */
+.paper-sheet {
+  background-color: #fffde7;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(0, 0, 0, 0.1) inset;
+  position: relative;
+}
+
+/* 종이 고정 핀 효과 */
+.paper-pin {
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+  border-radius: 50%;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  z-index: 10;
+}
+
+/* 4. 나무 액자 프레임 (버튼용) */
+.wood-frame {
+  background: #fff;
+  /* 내용물 배경 */
+  border: 12px solid #5d4037;
+  border-image: linear-gradient(to bottom right, #6d4c41, #3e2723) 1;
+  box-shadow:
+    inset 0 0 10px rgba(0, 0, 0, 0.5),
+    /* 안쪽 그림자 */
+    0 5px 10px rgba(0, 0, 0, 0.5);
+  /* 바깥 그림자 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  /* 나무 질감 보더 시뮬레이션 (border-image가 안될 경우를 대비해 box-shadow로 입체감) */
+  border: 10px solid #5d4037;
+  border-right-color: #3e2723;
+  border-bottom-color: #3e2723;
+}
+
+/* 5. 나무 현판 (배너용) */
+.wood-sign {
+  background: #8d6e63;
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, transparent 5%, rgba(0, 0, 0, 0.1) 50%, rgba(255, 255, 255, 0.05) 95%),
+    repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(0, 0, 0, 0.05) 2px, rgba(0, 0, 0, 0.05) 4px);
+  border: 4px solid #3e2723;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  font-family: 'Gamja Flower', cursive;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 6. 추천 메뉴 버튼 (항아리/나무 느낌) */
+.recommend-btn {
+  background: #8d6e63;
+  background-image: linear-gradient(to bottom, #a1887f, #8d6e63);
+  color: white;
+  border: 3px solid #3e2723;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  padding: 2rem;
-}
-
-/* 버튼 스타일 */
-.torder-button {
-  background: var(--torder-red);
-  color: var(--torder-white);
-  border: none;
-  border-radius: 8px;
-  padding: 1rem 2rem;
-  font-size: 1.125rem;
-  font-weight: 600;
+  padding: 0.8rem 2rem;
+  font-family: 'Gamja Flower', cursive;
+  font-size: 1.8rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.torder-button:hover {
-  background: var(--torder-red-light);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+.recommend-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.torder-button:active {
-  transform: translateY(0);
+/* 팝업 관련 (기존 유지) */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.torder-button-secondary {
-  background: var(--torder-gray);
-  color: var(--torder-text-dark);
-}
-
-.torder-button-secondary:hover {
-  background: #d5dbdb;
-}
-
-/* 텍스트 스타일 */
-.torder-title {
-  color: var(--torder-white);
-  font-size: 2.5rem;
-  font-weight: 700;
+.popup-content {
+  background: white;
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   text-align: center;
-  margin-bottom: 2rem;
+  position: relative;
+  width: 90%;
+  max-width: 600px;
+  animation: popupIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.torder-subtitle {
-  color: var(--torder-white);
-  font-size: 1.5rem;
-  font-weight: 500;
-  text-align: center;
-  opacity: 0.9;
-}
-
-.torder-text {
-  color: var(--torder-text-dark);
-  font-size: 1.125rem;
-  line-height: 1.6;
-}
-
-/* 애니메이션 */
-@keyframes fadeIn {
+@keyframes popupIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: scale(0.8);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-@keyframes pulse {
-  0%, 100% {
+  to {
     opacity: 1;
     transform: scale(1);
   }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-  }
 }
 
-.torder-fade-in {
-  animation: fadeIn 0.5s ease-out;
+.discount-sticker {
+  background: var(--sticker-red);
+  color: white;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transform: rotate(-15deg);
+  border: 3px solid white;
 }
 
-.torder-pulse {
-  animation: pulse 2s ease-in-out infinite;
+/* 진한 갈색 프레임 버튼 (서브 페이지용 유지) */
+.dark-frame-button {
+  background: #fff;
+  border: 8px solid var(--wood-dark);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s;
+  cursor: pointer;
 }
 
+.dark-frame-button:active {
+  transform: scale(0.95);
+}

@@ -6,7 +6,7 @@ interface MovingGuidePageProps {
 
 export default function MovingGuidePage({ tableNumber }: MovingGuidePageProps) {
   return (
-    <div className="torder-background" style={{
+    <div className="hanji-background" style={{
       width: '100%',
       height: '100vh',
       display: 'flex',
@@ -15,48 +15,41 @@ export default function MovingGuidePage({ tableNumber }: MovingGuidePageProps) {
       justifyContent: 'center',
       padding: '2rem'
     }}>
-      {/* 로고 */}
-      <div className="torder-logo" style={{ marginBottom: '2rem', fontSize: '2rem' }}>
-        팡씨네 할머니집
+      {/* 상단 타이틀 */}
+      <div style={{
+        fontSize: '2rem',
+        fontWeight: 'bold',
+        marginBottom: '3rem',
+        color: '#3e2723'
+      }}>
+        자리 이동 안내
       </div>
 
-      {/* 제목 */}
-      <h1 className="torder-subtitle" style={{
-        fontSize: '1.5rem',
-        fontWeight: '500',
-        marginBottom: '2rem',
-        textAlign: 'center',
-        color: '#fff',
-        opacity: 0.9
-      }}>
-        자리 이동 안내 페이지
-      </h1>
-
       {/* 메인 박스 */}
-      <div className="torder-card" style={{
-        border: 'none',
-        borderRadius: '16px',
+      <div className="cream-paper" style={{
         padding: '4rem',
         width: '100%',
         maxWidth: '600px',
-        backgroundColor: '#fff',
         textAlign: 'center',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}>
         <div style={{
-          fontSize: '2rem',
+          fontSize: '2.5rem',
           fontWeight: 'bold',
-          color: '#2c3e50',
+          color: '#1a1a1a',
           marginBottom: '2rem'
         }}>
           {tableNumber} 번 자리로
         </div>
         <div className="torder-pulse" style={{
-          fontSize: '3rem',
+          fontSize: '3.5rem',
           fontWeight: 'bold',
-          color: '#e74c3c'
+          color: '#d32f2f'
         }}>
-          이동 중
+          이동 중...
         </div>
       </div>
 
@@ -68,6 +61,9 @@ export default function MovingGuidePage({ tableNumber }: MovingGuidePageProps) {
           50% {
             opacity: 0.5;
           }
+        }
+        .torder-pulse {
+          animation: pulse 1.5s infinite ease-in-out;
         }
       `}</style>
     </div>
