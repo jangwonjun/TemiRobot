@@ -2,38 +2,41 @@
 
 export default function AutoReturnPage() {
   return (
-    <div className="torder-background" style={{
-      width: '100vw',
+    <div className="hanji-background" style={{
+      width: '100%',
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: 'clamp(1rem, 3vw, 2rem)',
-      boxSizing: 'border-box',
-      overflow: 'hidden'
+      padding: '2rem'
     }}>
-      {/* 로고 */}
-      <div className="torder-logo" style={{ marginBottom: 'clamp(1rem, 3vh, 2rem)', fontSize: 'clamp(1.5rem, 3.5vw, 2rem)' }}>
-        팡씨네 할머니집
+      {/* 상단 타이틀 */}
+      <div style={{
+        fontSize: '2rem',
+        fontWeight: 'bold',
+        marginBottom: '3rem',
+        color: '#3e2723'
+      }}>
+        복귀 중
       </div>
 
       {/* 메인 박스 */}
-      <div className="torder-card" style={{
-        border: 'none',
-        borderRadius: 'clamp(12px, 2vw, 16px)',
-        padding: 'clamp(2.5rem, 6vw, 4rem)',
+      <div className="cream-paper" style={{
+        padding: '4rem',
         width: '100%',
-        maxWidth: 'min(90vw, 600px)',
-        backgroundColor: '#fff',
+        maxWidth: '600px',
         textAlign: 'center',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-        boxSizing: 'border-box'
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}>
         <div style={{
-          fontSize: 'clamp(1.8rem, 4.5vw, 2.5rem)',
+          fontSize: '3rem',
           fontWeight: 'bold',
-          color: '#2c3e50'
+          color: '#1a1a1a',
+          marginBottom: '1rem'
         }}>
           5초후 자동으로 돌아간데이
         </div>
@@ -41,13 +44,13 @@ export default function AutoReturnPage() {
 
       {/* 하단 텍스트 */}
       <div style={{
-        marginTop: 'clamp(1.5rem, 4vh, 3rem)',
-        fontSize: 'clamp(1.2rem, 2.5vw, 1.5rem)',
-        color: '#fff',
+        marginTop: '3rem',
+        fontSize: '1.5rem',
+        color: '#5d4037',
         fontWeight: 'bold',
         opacity: 0.8
       }}>
-        마지막 page.
+        원위치로 복귀 중...
       </div>
     </div>
   )

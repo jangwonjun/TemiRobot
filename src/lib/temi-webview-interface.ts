@@ -50,6 +50,9 @@ export async function temiGoTo(location: string): Promise<void> {
 /**
  * 테미 로봇이 말하기
  */
+/**
+ * 테미 로봇이 말하기
+ */
 export async function temiSpeak(content: string): Promise<void> {
   if (isTemiWebViewAvailable() && window.temi) {
     try {
@@ -60,7 +63,21 @@ export async function temiSpeak(content: string): Promise<void> {
       throw error
     }
   } else {
-    throw new Error('TemiInterface is not available. Make sure you are running in Android WebView with TemiInterface registered.')
+    // 브라우저 환경에서 할머니 목소리 흉내 (Mock Mode)
+    console.log(`[TemiInterface Mock] speak: ${content}`)
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      // 기존 발화 취소
+      window.speechSynthesis.cancel()
+
+      const utterance = new SpeechSynthesisUtterance(content)
+      utterance.lang = 'ko-KR'
+      utterance.rate = 0.8 // 속도를 느리게
+      utterance.pitch = 0.8 // 톤을 낮게 (할머니 느낌)
+
+      window.speechSynthesis.speak(utterance)
+    } else {
+      console.warn('TemiInterface is not available and browser does not support speech synthesis.')
+    }
   }
 }
 

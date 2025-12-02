@@ -1,0 +1,18 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Bowl -->
+  <path d="M10,40 Q10,90 50,90 T90,40" fill="#5d4037" stroke="#3e2723" stroke-width="3"/>
+  <ellipse cx="50" cy="40" rx="40" ry="10" fill="#795548" stroke="#3e2723" stroke-width="3"/>
+  
+  <!-- Food Content (Rice/Stew) -->
+  <ellipse cx="50" cy="38" rx="35" ry="8" fill="#ffcc80"/>
+  
+  <!-- Toppings (Red Pepper/Kimchi) -->
+  <circle cx="40" cy="38" r="5" fill="#d32f2f"/>
+  <circle cx="60" cy="36" r="4" fill="#388e3c"/>
+  <circle cx="50" cy="40" r="6" fill="#fbc02d"/>
+  
+  <!-- Steam -->
+  <path d="M30,20 Q35,10 40,20" stroke="white" stroke-width="2" fill="none" opacity="0.6"/>
+  <path d="M50,15 Q55,5 60,15" stroke="white" stroke-width="2" fill="none" opacity="0.6"/>
+  <path d="M70,20 Q75,10 80,20" stroke="white" stroke-width="2" fill="none" opacity="0.6"/>
+</svg>
