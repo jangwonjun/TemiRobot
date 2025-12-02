@@ -10,17 +10,18 @@ export default function MainPage({ onTableSelect, onMenuRecommend }: MainPagePro
 
   return (
     <div className="torder-background" style={{
-      width: '100%',
+      width: '100vw',
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '2rem',
-      position: 'relative'
+      padding: '1.5rem',
+      position: 'relative',
+      boxSizing: 'border-box'
     }}>
       {/* 로고 */}
-      <div className="torder-logo" style={{ marginBottom: '1rem', fontSize: '2.5rem' }}>
+      <div className="torder-logo" style={{ marginBottom: '1.5rem', fontSize: 'clamp(1.8rem, 4vw, 2.5rem)' }}>
         팡씨네 할머니집
       </div>
 
@@ -28,10 +29,11 @@ export default function MainPage({ onTableSelect, onMenuRecommend }: MainPagePro
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: '2rem',
+        gap: 'clamp(1rem, 2vw, 2rem)',
         width: '100%',
-        maxWidth: '800px',
-        marginBottom: '3rem'
+        maxWidth: 'min(90vw, 800px)',
+        marginBottom: 'clamp(1.5rem, 3vh, 3rem)',
+        padding: '0 1rem'
       }}>
         {tables.map((capacity) => (
           <button
@@ -41,9 +43,9 @@ export default function MainPage({ onTableSelect, onMenuRecommend }: MainPagePro
             style={{
               aspectRatio: '1',
               border: 'none',
-              borderRadius: '16px',
+              borderRadius: 'clamp(12px, 2vw, 16px)',
               backgroundColor: '#fff',
-              fontSize: '2rem',
+              fontSize: 'clamp(1.2rem, 3vw, 2rem)',
               fontWeight: 'bold',
               color: '#2c3e50',
               cursor: 'pointer',
@@ -53,7 +55,8 @@ export default function MainPage({ onTableSelect, onMenuRecommend }: MainPagePro
               alignItems: 'center',
               justifyContent: 'center',
               position: 'relative',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+              minHeight: '80px'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'scale(1.05) translateY(-4px)'
@@ -64,8 +67,8 @@ export default function MainPage({ onTableSelect, onMenuRecommend }: MainPagePro
               e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.2)'
             }}
           >
-            <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: '#e74c3c' }}>{capacity}</div>
-            <div style={{ fontSize: '1rem', color: '#7f8c8d' }}>인석</div>
+            <div style={{ fontSize: 'clamp(1rem, 2.5vw, 1.5rem)', marginBottom: '0.5rem', color: '#e74c3c' }}>{capacity}</div>
+            <div style={{ fontSize: 'clamp(0.8rem, 1.5vw, 1rem)', color: '#7f8c8d' }}>인석</div>
           </button>
         ))}
       </div>
@@ -75,16 +78,17 @@ export default function MainPage({ onTableSelect, onMenuRecommend }: MainPagePro
         onClick={onMenuRecommend}
         className="torder-button"
         style={{
-          padding: '1rem 2rem',
+          padding: 'clamp(0.8rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem)',
           backgroundColor: '#e74c3c',
           color: 'white',
           border: 'none',
-          borderRadius: '12px',
-          fontSize: '1.25rem',
+          borderRadius: 'clamp(10px, 1.5vw, 12px)',
+          fontSize: 'clamp(1rem, 2.5vw, 1.25rem)',
           fontWeight: 'bold',
           cursor: 'pointer',
           transition: 'all 0.3s',
-          boxShadow: '0 4px 12px rgba(231, 76, 60, 0.3)'
+          boxShadow: '0 4px 12px rgba(231, 76, 60, 0.3)',
+          minWidth: '200px'
         }}
       >
         추천 메뉴

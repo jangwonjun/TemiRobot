@@ -17,7 +17,12 @@
   padding: 0;
 }
 
-body {
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -25,11 +30,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#__next {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 /* T'order 배경 그라데이션 */
 .torder-background {
   background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
-  min-height: 100vh;
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
 }
 
 /* 팡씨네 할머니집 로고 스타일 */

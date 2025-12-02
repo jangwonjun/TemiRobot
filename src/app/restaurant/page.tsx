@@ -97,7 +97,7 @@ export default function RestaurantPage() {
   }
 
   return (
-    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', position: 'fixed', top: 0, left: 0 }}>
       {currentPage === 'main' && (
         <MainPage 
           onTableSelect={handleTableSelect}

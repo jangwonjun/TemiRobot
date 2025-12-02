@@ -24,24 +24,26 @@ export default function PersonSelectPage({ onConfirm, onBack }: PersonSelectPage
 
   return (
     <div className="torder-background" style={{
-      width: '100%',
+      width: '100vw',
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '2rem'
+      padding: 'clamp(1rem, 3vw, 2rem)',
+      boxSizing: 'border-box',
+      overflow: 'hidden'
     }}>
       {/* 로고 */}
-      <div className="torder-logo" style={{ marginBottom: '2rem', fontSize: '2rem' }}>
+      <div className="torder-logo" style={{ marginBottom: 'clamp(1rem, 3vh, 2rem)', fontSize: 'clamp(1.5rem, 3.5vw, 2rem)' }}>
         팡씨네 할머니집
       </div>
 
       {/* 제목 */}
       <h1 className="torder-subtitle" style={{
-        fontSize: '1.5rem',
+        fontSize: 'clamp(1.2rem, 2.5vw, 1.5rem)',
         fontWeight: '500',
-        marginBottom: '2rem',
+        marginBottom: 'clamp(1rem, 3vh, 2rem)',
         textAlign: 'center',
         color: '#fff',
         opacity: 0.9
@@ -52,20 +54,21 @@ export default function PersonSelectPage({ onConfirm, onBack }: PersonSelectPage
       {/* 메인 박스 */}
       <div className="torder-card" style={{
         border: 'none',
-        borderRadius: '16px',
-        padding: '3rem',
+        borderRadius: 'clamp(12px, 2vw, 16px)',
+        padding: 'clamp(2rem, 5vw, 3rem)',
         width: '100%',
-        maxWidth: '600px',
+        maxWidth: 'min(90vw, 600px)',
         backgroundColor: '#fff',
         position: 'relative',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+        boxSizing: 'border-box'
       }}>
         {/* 질문 */}
         <div style={{
-          fontSize: '2rem',
+          fontSize: 'clamp(1.5rem, 3.5vw, 2rem)',
           fontWeight: 'bold',
           textAlign: 'center',
-          marginBottom: '3rem',
+          marginBottom: 'clamp(1.5rem, 4vh, 3rem)',
           color: '#2c3e50'
         }}>
           어여와~ 몇 명이야?
@@ -76,20 +79,20 @@ export default function PersonSelectPage({ onConfirm, onBack }: PersonSelectPage
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '2rem',
-          marginBottom: '3rem'
+          gap: 'clamp(1rem, 3vw, 2rem)',
+          marginBottom: 'clamp(1.5rem, 4vh, 3rem)'
         }}>
           {/* 감소 버튼 */}
           <button
             onClick={handleDecrement}
             disabled={partySize <= 1}
             style={{
-              width: '60px',
-              height: '60px',
+              width: 'clamp(50px, 8vw, 60px)',
+              height: 'clamp(50px, 8vw, 60px)',
               borderRadius: '50%',
               border: partySize <= 1 ? '3px solid #bdc3c7' : '3px solid #e74c3c',
               backgroundColor: partySize <= 1 ? '#ecf0f1' : '#fff',
-              fontSize: '2rem',
+              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
               fontWeight: 'bold',
               color: partySize <= 1 ? '#95a5a6' : '#e74c3c',
               cursor: partySize <= 1 ? 'not-allowed' : 'pointer',
@@ -115,10 +118,10 @@ export default function PersonSelectPage({ onConfirm, onBack }: PersonSelectPage
 
           {/* 인원 수 */}
           <div style={{
-            fontSize: '4rem',
+            fontSize: 'clamp(2.5rem, 6vw, 4rem)',
             fontWeight: 'bold',
             color: '#e74c3c',
-            minWidth: '100px',
+            minWidth: 'clamp(80px, 15vw, 100px)',
             textAlign: 'center'
           }}>
             {partySize}
@@ -129,12 +132,12 @@ export default function PersonSelectPage({ onConfirm, onBack }: PersonSelectPage
             onClick={handleIncrement}
             disabled={partySize >= 10}
             style={{
-              width: '60px',
-              height: '60px',
+              width: 'clamp(50px, 8vw, 60px)',
+              height: 'clamp(50px, 8vw, 60px)',
               borderRadius: '50%',
               border: partySize >= 10 ? '3px solid #bdc3c7' : '3px solid #e74c3c',
               backgroundColor: partySize >= 10 ? '#ecf0f1' : '#fff',
-              fontSize: '2rem',
+              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
               fontWeight: 'bold',
               color: partySize >= 10 ? '#95a5a6' : '#e74c3c',
               cursor: partySize >= 10 ? 'not-allowed' : 'pointer',
@@ -165,12 +168,12 @@ export default function PersonSelectPage({ onConfirm, onBack }: PersonSelectPage
           className="torder-button"
           style={{
             width: '100%',
-            padding: '1.5rem',
+            padding: 'clamp(1rem, 2.5vw, 1.5rem)',
             backgroundColor: '#e74c3c',
             color: 'white',
             border: 'none',
-            borderRadius: '12px',
-            fontSize: '1.5rem',
+            borderRadius: 'clamp(10px, 1.5vw, 12px)',
+            fontSize: 'clamp(1.2rem, 2.5vw, 1.5rem)',
             fontWeight: 'bold',
             cursor: 'pointer',
             transition: 'all 0.3s',
@@ -185,13 +188,13 @@ export default function PersonSelectPage({ onConfirm, onBack }: PersonSelectPage
       <button
         onClick={onBack}
         style={{
-          marginTop: '2rem',
-          padding: '0.75rem 1.5rem',
+          marginTop: 'clamp(1rem, 3vh, 2rem)',
+          padding: 'clamp(0.6rem, 1.5vw, 0.75rem) clamp(1.2rem, 3vw, 1.5rem)',
           backgroundColor: '#757575',
           color: 'white',
           border: 'none',
-          borderRadius: '6px',
-          fontSize: '1rem',
+          borderRadius: 'clamp(6px, 1vw, 8px)',
+          fontSize: 'clamp(0.9rem, 2vw, 1rem)',
           cursor: 'pointer'
         }}
       >
