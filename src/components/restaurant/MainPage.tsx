@@ -3,9 +3,10 @@
 interface MainPageProps {
   onTableSelect: (tableNumber: number) => void
   onMenuRecommend: () => void
+  remainingSeats: number
 }
 
-export default function MainPage({ onTableSelect, onMenuRecommend }: MainPageProps) {
+export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeats }: MainPageProps) {
   const tables = [2, 4, 6, 8]
 
   return (
@@ -157,7 +158,9 @@ export default function MainPage({ onTableSelect, onMenuRecommend }: MainPagePro
           minWidth: '200px'
         }}>
           <div style={{ fontSize: '1.2rem', marginBottom: '0.2rem', color: '#ffccbc' }}>🪑 여석 안내 🪑</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffab91' }}>N 자리 남음</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffab91' }}>
+            {remainingSeats === 0 ? '만석입니다.' : `${remainingSeats} 자리 남음`}
+          </div>
         </div>
       </div>
     </div>

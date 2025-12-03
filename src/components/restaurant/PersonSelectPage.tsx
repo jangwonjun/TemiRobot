@@ -9,19 +9,18 @@ interface PersonSelectPageProps {
 }
 
 export default function PersonSelectPage({ onConfirm, onBack, selectedTable }: PersonSelectPageProps) {
-  // selectedTable에 따라 최소/최대 인원 설정
-  // 2인석: 1~2명
-  // 4인석: 3~4명
-  // 6인석: 5~6명
-  // 8인석: 7~8명
-  const minCount = selectedTable === 2 ? 1 : selectedTable - 1
-  const maxCount = selectedTable
+  // selectedTable은 테이블 번호 (1, 2, 3, 4...)
+  // 테이블 번호로 용량(capacity) 계산: 1,2->2 / 3,4->4 / 5,6->6 / 7,8->8
+  const capacity = Math.ceil(selectedTable / 2) * 2
 
-  // 4인석일 경우 시작값을 3으로, 나머지는 최대 인원으로 설정 -> 모든 테이블 최소 인원으로 시작하도록 변경
-  // 2인석: 1명 시작
-  // 4인석: 3명 시작
-  // 6인석: 5명 시작
-  // 8인석: 7명 시작
+  // 1명부터 capacity까지 선택 가능하도록 설정 -> 요청사항: N인석은 N-1명부터 시작
+  // 2인석: 1~2명 (1명 시작)
+  // 4인석: 3~4명 (3명 시작)
+  // 6인석: 5~6명 (5명 시작)
+  // 8인석: 7~8명 (7명 시작)
+  const minCount = capacity - 1
+  const maxCount = capacity
+
   const initialCount = minCount
   const [partySize, setPartySize] = useState(initialCount)
 
@@ -97,7 +96,7 @@ export default function PersonSelectPage({ onConfirm, onBack, selectedTable }: P
 
         <button
           onClick={handleIncrement}
-          disabled={partySize >= selectedTable}
+          disabled={partySize >= maxCount}
           className="dark-frame-button"
           style={{
             width: '60px',
@@ -106,7 +105,7 @@ export default function PersonSelectPage({ onConfirm, onBack, selectedTable }: P
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            opacity: partySize >= selectedTable ? 0.5 : 1
+            opacity: partySize >= maxCount ? 0.5 : 1
           }}
         >
           +
