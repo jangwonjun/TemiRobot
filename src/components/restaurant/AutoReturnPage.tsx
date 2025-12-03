@@ -38,7 +38,7 @@ export default function AutoReturnPage() {
           color: '#1a1a1a',
           marginBottom: '1rem'
         }}>
-          5초후 자동으로 돌아간데이
+          5초 후 복귀
         </div>
       </div>
 

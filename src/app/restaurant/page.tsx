@@ -21,14 +21,37 @@ export default function RestaurantPage() {
   const [currentPage, setCurrentPage] = useState<PageType>('main')
   const [selectedTable, setSelectedTable] = useState<number | null>(null)
   const [partySize, setPartySize] = useState<number>(1)
+  const [remainingSeats, setRemainingSeats] = useState<number>(8)
+  const [occupiedTables, setOccupiedTables] = useState<number[]>([])
+  const [alertMessage, setAlertMessage] = useState<string | null>(null)
 
-  const handleTableSelect = (tableNumber: number) => {
-    setSelectedTable(tableNumber)
+  const TABLE_RANGES: Record<number, number[]> = {
+    2: [1, 2],
+    4: [3, 4],
+    6: [5, 6],
+    8: [7, 8],
+  }
+
+  const handleTableSelect = (capacity: number) => {
+    const range = TABLE_RANGES[capacity]
+    const availableTable = range.find(t => !occupiedTables.includes(t))
+
+    if (!availableTable) {
+      setAlertMessage(`${capacity}인석이 현재 없습니다.`)
+      setTimeout(() => setAlertMessage(null), 3000)
+      return
+    }
+
+    setSelectedTable(availableTable)
     setCurrentPage('person-select')
   }
 
   const handlePersonConfirm = async (size: number) => {
     setPartySize(size)
+    if (selectedTable && !occupiedTables.includes(selectedTable)) {
+      setOccupiedTables(prev => [...prev, selectedTable])
+      setRemainingSeats((prev) => Math.max(0, prev - 1))
+    }
     setCurrentPage('moving')
 
     try {
@@ -102,6 +125,7 @@ export default function RestaurantPage() {
         <MainPage
           onTableSelect={handleTableSelect}
           onMenuRecommend={handleMenuRecommend}
+          remainingSeats={remainingSeats}
         />
       )}
       {currentPage === 'person-select' && (
@@ -129,6 +153,27 @@ export default function RestaurantPage() {
         <MenuRecommendPage
           onBack={handleBackToMain}
         />
+      )}
+
+      {/* 커스텀 알림 메시지 */}
+      {alertMessage && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          color: 'white',
+          padding: '2rem 4rem',
+          borderRadius: '20px',
+          fontSize: '2rem',
+          fontWeight: 'bold',
+          zIndex: 9999,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+          animation: 'fadeIn 0.3s ease-in-out'
+        }}>
+          {alertMessage}
+        </div>
       )}
     </div>
   )
