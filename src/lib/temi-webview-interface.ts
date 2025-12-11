@@ -15,12 +15,26 @@ declare global {
 }
 
 /**
- * 테이블 번호를 waypoint 이름으로 변환
+ * 테이블 번호를 테미 로봇 waypoint로 변환
+ * 테미 로봇에는 1, 2, 3, 4로 맵핑된 waypoint가 있음
+ * 
+ * 매핑 규칙:
+ * - 테이블 1,2 → waypoint "1"
+ * - 테이블 3,4 → waypoint "2"
+ * - 테이블 5,6 → waypoint "3"
+ * - 테이블 7,8 → waypoint "4"
  */
 export function getTableWaypoint(tableNumber: number): string {
-  // 테이블 번호를 그대로 사용 (예: "1", "2", "3", "4")
-  // 또는 "table-1", "table-2" 형식으로 사용할 수도 있습니다
-  return tableNumber.toString()
+  // 테이블 번호를 1-4로 매핑
+  if (tableNumber <= 2) {
+    return "1"
+  } else if (tableNumber <= 4) {
+    return "2"
+  } else if (tableNumber <= 6) {
+    return "3"
+  } else {
+    return "4"
+  }
 }
 
 /**
