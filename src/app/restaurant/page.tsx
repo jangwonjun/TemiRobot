@@ -24,6 +24,7 @@ export default function RestaurantPage() {
   const [remainingSeats, setRemainingSeats] = useState<number>(4)
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([])
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
+  const [isMoving, setIsMoving] = useState<boolean>(false)
 
   /**
    * 인원수에 따라 좌석 번호(1~4)를 결정
@@ -44,11 +45,30 @@ export default function RestaurantPage() {
     setCurrentPage('person-select')
   }
 
+  // 도착 이벤트 핸들러 등록
+  useEffect(() => {
+    // 전역 함수로 등록하여 Android에서 호출 가능하도록
+    if (typeof window !== 'undefined') {
+      (window as any).onTemiArrived = (location: string) => {
+        console.log('도착 이벤트 수신:', location)
+        setIsMoving(false)
+        setCurrentPage('move-complete')
+      }
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete (window as any).onTemiArrived
+      }
+    }
+  }, [])
+
   const handlePersonConfirm = async (size: number) => {
     setPartySize(size)
     
     // 인원수에 따라 좌석 번호 결정 (1~4번)
     const seatNumber = getSeatNumber(size)
+    console.log(`인원수: ${size}명 -> 좌석 번호: ${seatNumber}번`)
     
     // 좌석이 이미 사용 중인지 확인
     if (occupiedSeats.includes(seatNumber)) {
@@ -61,12 +81,12 @@ export default function RestaurantPage() {
     setOccupiedSeats(prev => [...prev, seatNumber])
     setRemainingSeats((prev) => Math.max(0, prev - 1))
     setSelectedTable(seatNumber)
-    
+    setIsMoving(true)
     setCurrentPage('moving')
 
     try {
       // WebView에서 TemiInterface 사용 가능한지 확인
-      const { isTemiWebViewAvailable, temiGoTo, temiSpeak, getTableWaypoint } = await import('@/lib/temi-webview-interface')
+      const { isTemiWebViewAvailable, temiGoTo, temiSpeak } = await import('@/lib/temi-webview-interface')
 
       if (isTemiWebViewAvailable()) {
         // Android WebView에서 TemiInterface 사용
@@ -81,6 +101,16 @@ export default function RestaurantPage() {
         await temiGoTo(waypoint)
 
         console.log(`좌석 ${seatNumber}번(waypoint: ${waypoint})으로 이동 시작`)
+        
+        // 도착 이벤트를 기다림 (타임아웃: 30초)
+        // 도착 이벤트가 오지 않으면 타임아웃으로 처리
+        setTimeout(() => {
+          if (isMoving) {
+            console.log('도착 타임아웃 - 자동으로 완료 페이지로 이동')
+            setIsMoving(false)
+            setCurrentPage('move-complete')
+          }
+        }, 30000)
       } else {
         // WebView가 아닌 경우 기존 API 사용
         const useMock = localStorage.getItem('temi_use_mock') !== 'false'
@@ -94,14 +124,16 @@ export default function RestaurantPage() {
 
         const guideMessage = `${seatNumber}번 좌석으로 안내해드리겠습니다.`
         await temi.speak(guideMessage)
+        
+        // Mock 환경에서는 5초 후 완료
+        setTimeout(() => {
+          setIsMoving(false)
+          setCurrentPage('move-complete')
+        }, 5000)
       }
-
-      // 이동 완료 페이지로 (실제 이동 시간을 고려하여 5초 후)
-      setTimeout(() => {
-        setCurrentPage('move-complete')
-      }, 5000)
     } catch (error) {
       console.error('로봇 이동 실패:', error)
+      setIsMoving(false)
       // 에러가 있어도 이동 완료 페이지로
       setTimeout(() => {
         setCurrentPage('move-complete')

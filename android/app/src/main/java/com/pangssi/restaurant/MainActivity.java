@@ -2,16 +2,39 @@ package com.pangssi.restaurant;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
 import androidx.appcompat.app.AppCompatActivity;
 import com.robotemi.sdk.Robot;
+import com.robotemi.sdk.listeners.OnGoToLocationStatusChangedListener;
 
 public class MainActivity extends AppCompatActivity {
     
+    private static final String TAG = "MainActivity";
     private WebView webView;
     private Robot robot;
+    private TemiInterface temiInterface;
+    
+    // 도착 이벤트 리스너
+    private final OnGoToLocationStatusChangedListener onGoToLocationStatusChangedListener = new OnGoToLocationStatusChangedListener() {
+        @Override
+        public void onGoToLocationStatusChanged(String location, String status, String description, int descriptionId) {
+            Log.d(TAG, "onGoToLocationStatusChanged: location=" + location + ", status=" + status);
+            
+            // 도착 완료 상태 확인 (status가 "complete" 또는 "COMPLETE"인 경우)
+            if (status != null && (status.equals("complete") || status.equals("COMPLETE") || status.equalsIgnoreCase("complete"))) {
+                Log.d(TAG, "Location reached: " + location);
+                // JavaScript로 도착 이벤트 전달
+                if (webView != null && temiInterface != null) {
+                    runOnUiThread(() -> {
+                        temiInterface.notifyArrived(location);
+                    });
+                }
+            }
+        }
+    };
     
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -21,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
         
         // Robot 인스턴스 가져오기
         robot = Robot.getInstance();
+        
+        // 도착 이벤트 리스너 등록
+        robot.addOnGoToLocationStatusChangedListener(onGoToLocationStatusChangedListener);
         
         webView = findViewById(R.id.webview);
         
@@ -36,10 +62,10 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setDisplayZoomControls(false);
         webView.getSettings().setSupportZoom(false);
         
-        // TemiInterface를 JavaScript에 등록
-        // "temi"라는 이름으로 등록하면 window.temi로 접근 가능
+        // TemiInterface 생성 및 JavaScript에 등록
+        temiInterface = new TemiInterface(robot, webView);
         webView.addJavascriptInterface(
-            new TemiInterface(robot),  // Robot 인스턴스 전달
+            temiInterface,  // Robot 인스턴스 전달
             "temi"  // JavaScript에서 window.temi로 접근
         );
         
@@ -73,6 +99,15 @@ public class MainActivity extends AppCompatActivity {
     }
     
     @Override
+    protected void onDestroy() {
+        // 리스너 제거
+        if (robot != null) {
+            robot.removeOnGoToLocationStatusChangedListener(onGoToLocationStatusChangedListener);
+        }
+        super.onDestroy();
+    }
+    
+    @Override
     public void onBackPressed() {
         if (webView.canGoBack()) {
             webView.goBack();
@@ -83,6 +118,10 @@ public class MainActivity extends AppCompatActivity {
     
     @Override
     protected void onDestroy() {
+        // 리스너 제거
+        if (robot != null) {
+            robot.removeOnGoToLocationStatusChangedListener(onGoToLocationStatusChangedListener);
+        }
         if (webView != null) {
             webView.destroy();
         }

@@ -2,6 +2,7 @@ package com.pangssi.restaurant;
 
 import android.util.Log;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 import com.robotemi.sdk.Robot;
 import com.robotemi.sdk.TtsRequest;
 
@@ -17,14 +18,17 @@ public class TemiInterface {
 
     private static final String TAG = "TemiInterface";
     private final Robot robot;
+    private final WebView webView;
 
     /**
-     * Robot 객체를 받아서 TemiInterface를 생성합니다.
+     * Robot 객체와 WebView를 받아서 TemiInterface를 생성합니다.
      * 
      * @param robot Temi Robot 인스턴스
+     * @param webView WebView 인스턴스 (도착 이벤트 전달용)
      */
-    public TemiInterface(Robot robot) {
+    public TemiInterface(Robot robot, WebView webView) {
         this.robot = robot; // 전달받은 Robot 객체 사용
+        this.webView = webView; // WebView 인스턴스 저장
         Log.d(TAG, "TemiInterface initialized with Robot instance");
     }
 
@@ -154,6 +158,24 @@ public class TemiInterface {
         } else {
             Log.e(TAG, "Robot instance is null");
             return "";
+        }
+    }
+
+    /**
+     * 도착 이벤트를 JavaScript로 전달합니다.
+     * MainActivity의 OnGoToLocationStatusChangedListener에서 호출됩니다.
+     * 
+     * @param location 도착한 위치
+     */
+    public void notifyArrived(String location) {
+        Log.d(TAG, "notifyArrived called with location: " + location);
+        if (webView != null) {
+            // JavaScript 함수 호출: window.onTemiArrived(location)
+            webView.post(() -> {
+                String js = String.format("javascript:if(typeof window.onTemiArrived === 'function') { window.onTemiArrived('%s'); }", location);
+                webView.evaluateJavascript(js, null);
+                Log.d(TAG, "JavaScript onTemiArrived called with: " + location);
+            });
         }
     }
 }

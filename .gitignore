@@ -59,3 +59,12 @@ secrets/
 *.sqlite
 *.sqlite3
 
+# Android build files
+android/app/build/
+android/.gradle/
+android/local.properties
+android/*.keystore
+android/gradle/
+android/gradlew
+android/gradlew.bat
+

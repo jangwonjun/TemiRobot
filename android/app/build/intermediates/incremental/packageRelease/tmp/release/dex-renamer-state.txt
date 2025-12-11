@@ -1,0 +1,7 @@
+#Thu Dec 11 17:34:57 KST 2025
+base.0=/Users/activejang/Documents/code/temi/android/app/build/intermediates/dex/release/mergeDexRelease/classes.dex
+base.1=/Users/activejang/Documents/code/temi/android/app/build/intermediates/global_synthetics_dex/release/classes.dex
+path.0=classes.dex
+path.1=classes.dex
+renamed.0=classes.dex
+renamed.1=classes2.dex

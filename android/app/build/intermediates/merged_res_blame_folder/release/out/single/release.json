@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.pangssi.restaurant.app-merged_res-29:/layout_activity_main.xml.flat",
+        "source": "com.pangssi.restaurant.app-main-30:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.pangssi.restaurant.app-merged_res-29:/xml_network_security_config.xml.flat",
+        "source": "com.pangssi.restaurant.app-main-30:/xml/network_security_config.xml"
+    }
+]
