@@ -21,7 +21,10 @@ public class MainActivity extends AppCompatActivity {
     private final OnGoToLocationStatusChangedListener onGoToLocationStatusChangedListener = new OnGoToLocationStatusChangedListener() {
         @Override
         public void onGoToLocationStatusChanged(String location, String status, String description, int descriptionId) {
-            Log.d(TAG, "onGoToLocationStatusChanged: location=" + location + ", status=" + status);
+            Log.d(TAG, "onGoToLocationStatusChanged: location=" + location + ", status=" + status + ", description=" + description);
+            
+            // 모든 상태를 로그로 출력 (디버깅용)
+            Log.d(TAG, "Status details - location: " + location + ", status: " + status + ", description: " + description + ", descriptionId: " + descriptionId);
             
             // 도착 완료 상태 확인 (status가 "complete" 또는 "COMPLETE"인 경우)
             if (status != null && (status.equals("complete") || status.equals("COMPLETE") || status.equalsIgnoreCase("complete"))) {
@@ -29,9 +32,14 @@ public class MainActivity extends AppCompatActivity {
                 // JavaScript로 도착 이벤트 전달
                 if (webView != null && temiInterface != null) {
                     runOnUiThread(() -> {
+                        Log.d(TAG, "Calling notifyArrived with location: " + location);
                         temiInterface.notifyArrived(location);
                     });
+                } else {
+                    Log.e(TAG, "Cannot notify arrived: webView=" + (webView != null) + ", temiInterface=" + (temiInterface != null));
                 }
+            } else {
+                Log.d(TAG, "Status is not complete: " + status);
             }
         }
     };
@@ -44,9 +52,15 @@ public class MainActivity extends AppCompatActivity {
         
         // Robot 인스턴스 가져오기
         robot = Robot.getInstance();
+        Log.d(TAG, "Robot instance obtained: " + (robot != null ? "available" : "null"));
         
         // 도착 이벤트 리스너 등록
-        robot.addOnGoToLocationStatusChangedListener(onGoToLocationStatusChangedListener);
+        if (robot != null) {
+            robot.addOnGoToLocationStatusChangedListener(onGoToLocationStatusChangedListener);
+            Log.d(TAG, "OnGoToLocationStatusChangedListener registered");
+        } else {
+            Log.e(TAG, "Robot instance is null, cannot register listener");
+        }
         
         webView = findViewById(R.id.webview);
         
