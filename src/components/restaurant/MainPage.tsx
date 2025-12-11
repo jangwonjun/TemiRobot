@@ -4,9 +4,10 @@ interface MainPageProps {
   onTableSelect: (tableNumber: number) => void
   onMenuRecommend: () => void
   remainingSeats: number
+  onResetSeats: () => void
 }
 
-export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeats }: MainPageProps) {
+export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeats, onResetSeats }: MainPageProps) {
   const tables = [2, 4, 6, 8]
 
   return (
@@ -155,12 +156,35 @@ export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeat
           flex: 1,
           padding: '1rem',
           flexDirection: 'column',
-          minWidth: '200px'
+          minWidth: '200px',
+          position: 'relative' // 버튼 배치를 위해
         }}>
           <div style={{ fontSize: '1.2rem', marginBottom: '0.2rem', color: '#ffccbc' }}>🪑 여석 안내 🪑</div>
           <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffab91' }}>
             {remainingSeats === 0 ? '만석입니다.' : `${remainingSeats} 자리 남음`}
           </div>
+
+          {/* 초기화 버튼 */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onResetSeats()
+            }}
+            style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              background: 'none',
+              border: 'none',
+              color: '#ffccbc',
+              cursor: 'pointer',
+              fontSize: '1rem',
+              opacity: 0.7
+            }}
+            title="좌석 초기화"
+          >
+            ↻
+          </button>
         </div>
       </div>
     </div>

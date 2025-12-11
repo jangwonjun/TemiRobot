@@ -119,6 +119,10 @@ export default function RestaurantPage() {
     setPartySize(1)
   }
 
+  const handleResetSeats = () => {
+    setRemainingSeats(100) // Default initial value
+  }
+
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', position: 'fixed', top: 0, left: 0 }}>
       {currentPage === 'main' && (
@@ -126,6 +130,7 @@ export default function RestaurantPage() {
           onTableSelect={handleTableSelect}
           onMenuRecommend={handleMenuRecommend}
           remainingSeats={remainingSeats}
+          onResetSeats={handleResetSeats}
         />
       )}
       {currentPage === 'person-select' && (
