@@ -99,15 +99,6 @@ public class MainActivity extends AppCompatActivity {
     }
     
     @Override
-    protected void onDestroy() {
-        // 리스너 제거
-        if (robot != null) {
-            robot.removeOnGoToLocationStatusChangedListener(onGoToLocationStatusChangedListener);
-        }
-        super.onDestroy();
-    }
-    
-    @Override
     public void onBackPressed() {
         if (webView.canGoBack()) {
             webView.goBack();

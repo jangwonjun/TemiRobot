@@ -35,15 +35,25 @@ public class TemiInterface {
     /**
      * 테미 로봇을 특정 위치(waypoint)로 이동시킵니다.
      * 
-     * @param location waypoint 이름 (예: "1", "2", "3", "4" 또는 "table-1", "entrance" 등)
+     * @param location waypoint 이름 (1~4번 좌석만 허용)
      * 
      * 사용 예시:
-     * - window.temi.goTo("1")  // 테이블 1로 이동
-     * - window.temi.goTo("2")  // 테이블 2로 이동
+     * - window.temi.goTo("1")  // 1번 좌석으로 이동
+     * - window.temi.goTo("2")  // 2번 좌석으로 이동
+     * - window.temi.goTo("3")  // 3번 좌석으로 이동
+     * - window.temi.goTo("4")  // 4번 좌석으로 이동
      */
     @JavascriptInterface
     public void goTo(String location) {
         Log.d(TAG, "goTo called with: " + location);
+        
+        // 1~4번 좌석만 허용하는 검증
+        if (!location.equals("1") && !location.equals("2") && 
+            !location.equals("3") && !location.equals("4")) {
+            Log.e(TAG, "Invalid location: " + location + ". Only 1-4 are allowed.");
+            return;
+        }
+        
         if (robot != null) {
             robot.goTo(location);
             Log.d(TAG, "Robot goTo command sent: " + location);

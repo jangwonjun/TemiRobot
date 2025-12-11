@@ -23,7 +23,7 @@ android {
             // 릴리즈 빌드: 프로덕션 URL 사용
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "WEB_URL", '"https://your-domain.com/restaurant"'
+            buildConfigField "String", "WEB_URL", '"https://panglome.vercel.app/restaurant"'
             // 서명 설정 (키스토어 파일이 있으면 주석 해제)
             // signingConfig signingConfigs.release
         }
