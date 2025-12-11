@@ -41,5 +41,10 @@ fi
 
 echo ""
 echo "📱 테미 로봇에 설치하려면:"
+echo "   방법 1: 자동 배포 스크립트 사용 (권장)"
+echo "   ./deploy-apk.sh $BUILD_TYPE"
+echo ""
+echo "   방법 2: 수동 설치"
+echo "   adb connect 192.168.0.20:5555"
 echo "   adb install app/build/outputs/apk/$BUILD_TYPE/app-$BUILD_TYPE.apk"
 
