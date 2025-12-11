@@ -21,10 +21,11 @@ export default function RestaurantPage() {
   const [currentPage, setCurrentPage] = useState<PageType>('main')
   const [selectedTable, setSelectedTable] = useState<number | null>(null)
   const [partySize, setPartySize] = useState<number>(1)
-  const [remainingSeats, setRemainingSeats] = useState<number>(4)
+  const [remainingSeats, setRemainingSeats] = useState<number>(8)
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([])
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
   const [isMoving, setIsMoving] = useState<boolean>(false)
+  const [selectedCapacity, setSelectedCapacity] = useState<number | null>(null)
 
   /**
    * 인원수에 따라 좌석 번호(1~4)를 결정
@@ -41,7 +42,8 @@ export default function RestaurantPage() {
   }
 
   const handleTableSelect = (capacity: number) => {
-    // 테이블 용량 선택 시 바로 인원수 선택 페이지로 이동
+    // 테이블 용량 선택 시 용량 저장하고 인원수 선택 페이지로 이동
+    setSelectedCapacity(capacity)
     setCurrentPage('person-select')
   }
 
@@ -160,10 +162,14 @@ export default function RestaurantPage() {
     setCurrentPage('main')
     setSelectedTable(null)
     setPartySize(1)
+    setSelectedCapacity(null)
   }
 
   const handleResetSeats = () => {
-    setRemainingSeats(100) // Default initial value
+    setRemainingSeats(8)
+    setOccupiedSeats([])
+    setSelectedTable(null)
+    setPartySize(1)
   }
 
   return (
@@ -181,6 +187,7 @@ export default function RestaurantPage() {
           onConfirm={handlePersonConfirm}
           onBack={handleBackToMain}
           selectedTable={0}
+          minCapacity={selectedCapacity || 2}
         />
       )}
       {currentPage === 'moving' && (
