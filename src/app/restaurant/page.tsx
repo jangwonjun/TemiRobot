@@ -8,12 +8,14 @@ import MovingGuidePage from '@/components/restaurant/MovingGuidePage'
 import MoveCompletePage from '@/components/restaurant/MoveCompletePage'
 import AutoReturnPage from '@/components/restaurant/AutoReturnPage'
 import MenuRecommendPage from '@/components/restaurant/MenuRecommendPage'
+import QRPage from '@/components/restaurant/QRPage'
 
 type PageType =
   | 'main'
   | 'person-select'
   | 'moving'
   | 'move-complete'
+  | 'qr'
   | 'auto-return'
   | 'menu-recommend'
 
@@ -144,14 +146,8 @@ export default function RestaurantPage() {
   }
 
   const handleMoveComplete = () => {
-    setCurrentPage('auto-return')
-
-    // 5초 후 메인 페이지로 복귀
-    setTimeout(() => {
-      setCurrentPage('main')
-      setSelectedTable(null)
-      setPartySize(1)
-    }, 5000)
+    // 이동 완료 후 QR 페이지로 이동
+    setCurrentPage('qr')
   }
 
   const handleMenuRecommend = () => {
@@ -199,6 +195,12 @@ export default function RestaurantPage() {
         <MoveCompletePage
           tableNumber={selectedTable || 0}
           onComplete={handleMoveComplete}
+        />
+      )}
+      {currentPage === 'qr' && (
+        <QRPage
+          tableNumber={selectedTable || 0}
+          onHome={handleBackToMain}
         />
       )}
       {currentPage === 'auto-return' && (
