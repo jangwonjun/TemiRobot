@@ -6,13 +6,15 @@ export async function GET(request: Request) {
 
     // In a real scenario, this might fetch a unique session ID from a database
     // For now, we generate a URL based on the table number
-    // In production, this points to the Vercel deployment
+    // Get the host from the request to support both Local and Vercel Production
+    const host = request.headers.get('host')
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+
     const qrData = {
-        url: `https://temi-robot.vercel.app/order/${table || 'unknown'}`,
+        url: `${protocol}://${host}/order/${table || 'unknown'}`,
         description: `Table ${table} Order Page`,
         timestamp: new Date().toISOString()
     }
 
     return NextResponse.json(qrData)
 }
-
