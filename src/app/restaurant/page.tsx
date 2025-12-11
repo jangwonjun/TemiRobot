@@ -69,11 +69,11 @@ export default function RestaurantPage() {
 
   const handlePersonConfirm = async (size: number) => {
     setPartySize(size)
-    
+
     // 인원수에 따라 좌석 번호 결정 (1~4번)
     const seatNumber = getSeatNumber(size)
     console.log(`인원수: ${size}명 -> 좌석 번호: ${seatNumber}번`)
-    
+
     // 좌석이 이미 사용 중인지 확인
     if (occupiedSeats.includes(seatNumber)) {
       setAlertMessage(`${seatNumber}번 좌석이 현재 사용 중입니다.`)
@@ -105,7 +105,7 @@ export default function RestaurantPage() {
         await temiGoTo(waypoint)
 
         console.log(`좌석 ${seatNumber}번(waypoint: ${waypoint})으로 이동 시작`)
-        
+
         // 도착 이벤트를 기다림 (타임아웃: 30초)
         // 도착 이벤트가 오지 않으면 타임아웃으로 처리
         setTimeout(() => {
@@ -128,7 +128,7 @@ export default function RestaurantPage() {
 
         const guideMessage = `${seatNumber}번 좌석으로 안내해드리겠습니다.`
         await temi.speak(guideMessage)
-        
+
         // Mock 환경에서는 5초 후 완료
         setTimeout(() => {
           setIsMoving(false)
@@ -183,7 +183,8 @@ export default function RestaurantPage() {
           onConfirm={handlePersonConfirm}
           onBack={handleBackToMain}
           selectedTable={0}
-          minCapacity={selectedCapacity || 2}
+          minCapacity={selectedCapacity ? selectedCapacity - 1 : 1}
+          maxCapacity={selectedCapacity || 8}
         />
       )}
       {currentPage === 'moving' && (

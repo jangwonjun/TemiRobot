@@ -7,12 +7,13 @@ interface PersonSelectPageProps {
   onBack: () => void
   selectedTable: number
   minCapacity?: number
+  maxCapacity?: number
 }
 
-export default function PersonSelectPage({ onConfirm, onBack, selectedTable, minCapacity = 2 }: PersonSelectPageProps) {
-  // 선택한 용량부터 8명까지 선택 가능
+export default function PersonSelectPage({ onConfirm, onBack, selectedTable, minCapacity = 1, maxCapacity = 8 }: PersonSelectPageProps) {
+  // 선택한 용량부터 maxCapacity까지 선택 가능
   const minCount = minCapacity
-  const maxCount = 8
+  const maxCount = maxCapacity
 
   const initialCount = minCapacity
   const [partySize, setPartySize] = useState(initialCount)
