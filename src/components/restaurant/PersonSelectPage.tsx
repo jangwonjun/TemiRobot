@@ -9,19 +9,11 @@ interface PersonSelectPageProps {
 }
 
 export default function PersonSelectPage({ onConfirm, onBack, selectedTable }: PersonSelectPageProps) {
-  // selectedTable은 테이블 번호 (1, 2, 3, 4...)
-  // 테이블 번호로 용량(capacity) 계산: 1,2->2 / 3,4->4 / 5,6->6 / 7,8->8
-  const capacity = Math.ceil(selectedTable / 2) * 2
+  // 1~8명까지 선택 가능
+  const minCount = 1
+  const maxCount = 8
 
-  // 1명부터 capacity까지 선택 가능하도록 설정 -> 요청사항: N인석은 N-1명부터 시작
-  // 2인석: 1~2명 (1명 시작)
-  // 4인석: 3~4명 (3명 시작)
-  // 6인석: 5~6명 (5명 시작)
-  // 8인석: 7~8명 (7명 시작)
-  const minCount = capacity - 1
-  const maxCount = capacity
-
-  const initialCount = minCount
+  const initialCount = 1
   const [partySize, setPartySize] = useState(initialCount)
 
   const handleDecrement = () => {

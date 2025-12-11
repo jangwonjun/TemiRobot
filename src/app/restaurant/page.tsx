@@ -21,37 +21,47 @@ export default function RestaurantPage() {
   const [currentPage, setCurrentPage] = useState<PageType>('main')
   const [selectedTable, setSelectedTable] = useState<number | null>(null)
   const [partySize, setPartySize] = useState<number>(1)
-  const [remainingSeats, setRemainingSeats] = useState<number>(8)
-  const [occupiedTables, setOccupiedTables] = useState<number[]>([])
+  const [remainingSeats, setRemainingSeats] = useState<number>(4)
+  const [occupiedSeats, setOccupiedSeats] = useState<number[]>([])
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
 
-  const TABLE_RANGES: Record<number, number[]> = {
-    2: [1, 2],
-    4: [3, 4],
-    6: [5, 6],
-    8: [7, 8],
+  /**
+   * 인원수에 따라 좌석 번호(1~4)를 결정
+   * 1~2명 -> 1번좌석
+   * 3~4명 -> 2번좌석
+   * 5~6명 -> 3번좌석
+   * 7~8명 -> 4번좌석
+   */
+  const getSeatNumber = (partySize: number): number => {
+    if (partySize <= 2) return 1
+    if (partySize <= 4) return 2
+    if (partySize <= 6) return 3
+    return 4
   }
 
   const handleTableSelect = (capacity: number) => {
-    const range = TABLE_RANGES[capacity]
-    const availableTable = range.find(t => !occupiedTables.includes(t))
-
-    if (!availableTable) {
-      setAlertMessage(`${capacity}인석이 현재 없습니다.`)
-      setTimeout(() => setAlertMessage(null), 3000)
-      return
-    }
-
-    setSelectedTable(availableTable)
+    // 테이블 용량 선택 시 바로 인원수 선택 페이지로 이동
     setCurrentPage('person-select')
   }
 
   const handlePersonConfirm = async (size: number) => {
     setPartySize(size)
-    if (selectedTable && !occupiedTables.includes(selectedTable)) {
-      setOccupiedTables(prev => [...prev, selectedTable])
-      setRemainingSeats((prev) => Math.max(0, prev - 1))
+    
+    // 인원수에 따라 좌석 번호 결정 (1~4번)
+    const seatNumber = getSeatNumber(size)
+    
+    // 좌석이 이미 사용 중인지 확인
+    if (occupiedSeats.includes(seatNumber)) {
+      setAlertMessage(`${seatNumber}번 좌석이 현재 사용 중입니다.`)
+      setTimeout(() => setAlertMessage(null), 3000)
+      return
     }
+
+    // 좌석 사용 처리
+    setOccupiedSeats(prev => [...prev, seatNumber])
+    setRemainingSeats((prev) => Math.max(0, prev - 1))
+    setSelectedTable(seatNumber)
+    
     setCurrentPage('moving')
 
     try {
@@ -60,16 +70,17 @@ export default function RestaurantPage() {
 
       if (isTemiWebViewAvailable()) {
         // Android WebView에서 TemiInterface 사용
-        const waypoint = getTableWaypoint(selectedTable || 0)
-        const guideMessage = `${selectedTable}번 테이블로 안내해드리겠습니다.`
+        // 좌석 번호(1~4)를 그대로 waypoint로 사용 (SDK에서 1~4로 매핑되어 있음)
+        const waypoint = seatNumber.toString()
+        const guideMessage = `${seatNumber}번 좌석으로 안내해드리겠습니다.`
 
         // 안내 메시지 먼저
         await temiSpeak(guideMessage)
 
-        // 테이블로 이동
+        // 좌석으로 이동 (waypoint는 "1", "2", "3", "4" 중 하나)
         await temiGoTo(waypoint)
 
-        console.log(`테이블 ${selectedTable}번(${waypoint})으로 이동 시작`)
+        console.log(`좌석 ${seatNumber}번(waypoint: ${waypoint})으로 이동 시작`)
       } else {
         // WebView가 아닌 경우 기존 API 사용
         const useMock = localStorage.getItem('temi_use_mock') !== 'false'
@@ -78,10 +89,10 @@ export default function RestaurantPage() {
           : (await import('@/lib/temi-api')).default
         const temi = new TemiApi()
 
-        const waypointId = `table-${selectedTable}-waypoint`
+        const waypointId = `table-${seatNumber}-waypoint`
         await temi.moveToLocation(waypointId)
 
-        const guideMessage = `${selectedTable}번 테이블로 안내해드리겠습니다.`
+        const guideMessage = `${seatNumber}번 좌석으로 안내해드리겠습니다.`
         await temi.speak(guideMessage)
       }
 
@@ -137,7 +148,7 @@ export default function RestaurantPage() {
         <PersonSelectPage
           onConfirm={handlePersonConfirm}
           onBack={handleBackToMain}
-          selectedTable={selectedTable || 0}
+          selectedTable={0}
         />
       )}
       {currentPage === 'moving' && (
