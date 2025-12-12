@@ -10,29 +10,14 @@ interface MoveCompletePageProps {
 
 export default function MoveCompletePage({ tableNumber, onComplete }: MoveCompletePageProps) {
   useEffect(() => {
-    const speakArrivalMessage = async () => {
-      try {
-        // 통합 API 사용 (정적 import로 변경하여 청크 로드 에러 방지)
-        const arrivalMessage = `${tableNumber}번 자리로 이동 완료되었습니다.`
-
-        if (temi.isAvailable()) {
-          // Android WebView에서 통합 API 사용
-          await temi.speak(arrivalMessage)
-        } else {
-          // WebView가 아닌 경우 기존 API 사용 (Mock 환경)
-          const useMock = localStorage.getItem('temi_use_mock') !== 'false'
-          const TemiApi = useMock
-            ? (await import('@/lib/temi-api-mock')).default
-            : (await import('@/lib/temi-api')).default
-          const temiApi = new TemiApi()
-          await temiApi.speak(arrivalMessage)
-        }
-      } catch (error) {
+    // 음성 안내를 즉시 실행 (await 제거하여 딜레이 없음)
+    if (temi.isAvailable()) {
+      const arrivalMessage = `${tableNumber}번 자리로 이동 완료되었습니다.`
+      // await 제거 - Promise를 기다리지 않고 즉시 실행
+      temi.speak(arrivalMessage).catch((error) => {
         console.error('음성 안내 실패:', error)
-      }
+      })
     }
-
-    speakArrivalMessage()
 
     // 2초 후 자동으로 다음 페이지로
     const timer = setTimeout(() => {
