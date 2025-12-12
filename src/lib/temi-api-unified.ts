@@ -180,8 +180,8 @@ export class TemiAPI {
         (window as any).onTemiArrived = eventHandler
       }
 
-      // 폴링 방식 (폴백 - 이벤트가 오지 않을 경우 대비)
-      checkInterval = setInterval(async () => {
+      // 위치 확인 함수 (중복 코드 제거)
+      const checkLocation = async () => {
         if (isResolved) {
           if (checkInterval) {
             clearInterval(checkInterval)
@@ -232,7 +232,13 @@ export class TemiAPI {
           console.error('위치 확인 실패:', error)
           // 에러가 발생해도 계속 확인 시도
         }
-      }, interval)
+      }
+
+      // 즉시 첫 번째 체크 실행 (딜레이 없음)
+      setTimeout(checkLocation, 0)
+
+      // 이후 주기적으로 체크 (폴백 - 이벤트가 오지 않을 경우 대비)
+      checkInterval = setInterval(checkLocation, interval)
     })
   }
 

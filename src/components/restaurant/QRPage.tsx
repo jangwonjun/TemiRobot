@@ -54,26 +54,7 @@ export default function QRPage({ tableNumber, onHome }: QRPageProps) {
         return () => clearInterval(interval)
     }, [tableNumber, view])
 
-    // 결제 완료 폴링 (핸드폰에서 결제 완료 후 Temi가 확인)
-    React.useEffect(() => {
-        if (view !== 'payment' || !receivedOrder) return
-
-        const interval = setInterval(async () => {
-            try {
-                const res = await fetch(`/api/order/sync?tableId=${tableNumber}`)
-                const data = await res.json()
-
-                // 결제 완료 상태 확인
-                if (data.success && data.paymentCompleted) {
-                    console.log('Payment completed detected, returning to dock')
-                    setView('returning')
-                }
-            } catch (err) {
-                console.error('Payment status check failed:', err)
-            }
-        }, 1000) // 1초마다 확인
-        return () => clearInterval(interval)
-    }, [tableNumber, view, receivedOrder])
+    // 결제 완료 폴링 제거 - Temi에서 버튼 클릭해야 넘어가도록 변경
 
     // Auto-return timer 및 도크 복귀
     React.useEffect(() => {
@@ -106,10 +87,15 @@ export default function QRPage({ tableNumber, onHome }: QRPageProps) {
     }, [view, onHome])
 
     const handlePaymentComplete = async () => {
-        // 이제 핸드폰에서 결제 완료를 처리하므로, 여기서는 주문만 삭제
-        // 실제 결제는 핸드폰에서 처리되고, PUT /api/order/sync로 상태 업데이트
-        // 결제 완료 폴링이 자동으로 'returning' 상태로 변경함
-        await fetch(`/api/order/sync?tableId=${tableNumber}`, { method: 'DELETE' })
+        // Temi에서 결제 확인 버튼 클릭 시 처리
+        // 주문 동기화 삭제하고 도크로 복귀
+        try {
+            await fetch(`/api/order/sync?tableId=${tableNumber}`, { method: 'DELETE' })
+            // 결제 확인 완료 후 도크로 복귀 화면으로 이동
+            setView('returning')
+        } catch (error) {
+            console.error('결제 확인 처리 실패:', error)
+        }
     }
 
     if (view === 'returning') {
