@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import VersionInfo from '@/components/VersionInfo'
 
 export const metadata: Metadata = {
   title: '팡씨네 할머니집',
@@ -19,7 +20,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        {children}
+        <VersionInfo />
+      </body>
     </html>
   )
 }

@@ -7,6 +7,8 @@ const nextConfig = {
     TEMI_ROBOT_ID: process.env.TEMI_ROBOT_ID,
     TEMI_ROBOT_IP: process.env.TEMI_ROBOT_IP,
     TEMI_ROBOT_PORT: process.env.TEMI_ROBOT_PORT,
+    // 빌드 타임스탬프 (자동 업데이트)
+    NEXT_PUBLIC_BUILD_TIME: new Date().toISOString(),
   },
   webpack: (config, { isServer }) => {
     // temi-api-unified를 메인 번들에 포함 (청크 분리 방지)
