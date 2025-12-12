@@ -142,7 +142,7 @@ export class TemiAPI {
     const {
       targetLocation,
       timeout = 30,
-      interval = 1000,
+      interval = 300, // 1000ms -> 300ms로 변경 (더 빠른 확인)
       onArrived,
       onTimeout,
     } = options

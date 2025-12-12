@@ -221,29 +221,29 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
     // Calculate Total
     const totalPrice = cart.reduce((acc, item) => acc + item.price, 0)
 
-    // 주문 완료 시 원위치로 돌아가기
-    useEffect(() => {
-        if (view === 'success') {
-            const returnToHome = async () => {
-                try {
-                    // 통합 API 사용 (정적 import로 변경하여 청크 로드 에러 방지)
-                    if (temi.isAvailable()) {
-                        // 2초 후 원위치로 이동 (주문 완료 메시지를 먼저 보여주기 위해)
-                        setTimeout(async () => {
-                            await temi.goHome({
-                                message: "주문이 완료되었습니다. 원위치로 돌아가겠습니다.",
-                                waitForArrival: false // 도착 감지 없이 이동만
-                            })
-                        }, 2000)
-                    }
-                } catch (error) {
-                    console.error('원위치 이동 실패:', error)
-                }
-            }
+    // 주문 완료 시 원위치로 돌아가기 (핸드폰에서는 제거 - Temi가 결제 완료를 감지하여 처리)
+    // useEffect(() => {
+    //     if (view === 'success') {
+    //         const returnToHome = async () => {
+    //             try {
+    //                 // 통합 API 사용 (정적 import로 변경하여 청크 로드 에러 방지)
+    //                 if (temi.isAvailable()) {
+    //                     // 2초 후 원위치로 이동 (주문 완료 메시지를 먼저 보여주기 위해)
+    //                     setTimeout(async () => {
+    //                         await temi.goHome({
+    //                             message: "주문이 완료되었습니다. 원위치로 돌아가겠습니다.",
+    //                             waitForArrival: false // 도착 감지 없이 이동만
+    //                         })
+    //                     }, 2000)
+    //                 }
+    //             } catch (error) {
+    //                 console.error('원위치 이동 실패:', error)
+    //             }
+    //         }
 
-            returnToHome()
-        }
-    }, [view])
+    //         returnToHome()
+    //     }
+    // }, [view])
 
     // Handlers
     const handleItemClick = (item: MenuItem) => {
@@ -306,6 +306,19 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                     tableId: params.tableId,
                     items: cart,
                     totalPrice: totalPrice,
+                })
+            })
+
+            // 실제 결제 처리 (예: 결제 API 호출)
+            // const paymentResult = await processPayment(cart, totalPrice)
+            // 여기서는 시뮬레이션으로 바로 결제 완료 처리
+            
+            // 결제 완료 후 Temi에 알림 (PUT으로 상태 업데이트)
+            await fetch('/api/order/sync', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tableId: params.tableId,
                 })
             })
 

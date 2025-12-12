@@ -46,7 +46,35 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ success: true, order })
     }
 
+    // 결제 완료 상태도 반환 (Temi가 폴링으로 확인)
+    if (order && order.status === 'payment_completed') {
+        return NextResponse.json({ success: true, order, paymentCompleted: true })
+    }
+
     return NextResponse.json({ success: false, message: 'No new orders' })
+}
+
+// 결제 완료 처리 (핸드폰에서 호출)
+export async function PUT(request: NextRequest) {
+    try {
+        const body = await request.json()
+        const { tableId } = body
+
+        if (!tableId) {
+            return NextResponse.json({ error: 'Missing tableId' }, { status: 400 })
+        }
+
+        if (orders[tableId]) {
+            orders[tableId].status = 'payment_completed'
+            orders[tableId].paymentCompletedAt = new Date().toISOString()
+            console.log(`[API] Payment completed for Table ${tableId}`)
+            return NextResponse.json({ success: true, message: 'Payment status updated' })
+        }
+
+        return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    } catch (error) {
+        return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+    }
 }
 
 // Endpoint to clear order (after payment)

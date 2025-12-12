@@ -1,5 +1,7 @@
 'use client'
 
+import VersionInfo from '@/components/VersionInfo'
+
 interface MainPageProps {
   onTableSelect: (tableNumber: number) => void
   onMenuRecommend: () => void
@@ -187,6 +189,9 @@ export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeat
           </button>
         </div>
       </div>
+      
+      {/* VersionInfo 추가 - 초기화면에만 표시 */}
+      <VersionInfo />
     </div>
   )
 }
