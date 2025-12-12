@@ -156,10 +156,25 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
     }
 
     // Finalize Order
-    const handleFinalOrder = () => {
-        // Here you would send the order to the backend
-        setView('success')
-        setCart([])
+    const handleFinalOrder = async () => {
+        try {
+            // Send order to the robot (Desktop) via API
+            await fetch('/api/order/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tableId: params.tableId,
+                    items: cart,
+                    totalPrice: totalPrice,
+                })
+            })
+
+            setView('success')
+            setCart([])
+        } catch (error) {
+            console.error('Failed to sync order:', error)
+            alert('주문 전송 중 오류가 발생했습니다.')
+        }
     }
 
     // Back to Menu (from Confirmation)
