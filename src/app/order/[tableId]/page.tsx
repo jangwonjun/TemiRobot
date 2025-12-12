@@ -145,6 +145,10 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
         )
     }
 
+    const handleRemoveItem = (uid: string) => {
+        setCart(prev => prev.filter(item => item.uid !== uid))
+    }
+
     // Go to Confirmation View
     const handlePlaceOrder = () => {
         if (cart.length === 0) {
@@ -681,18 +685,38 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                                     {cart.map((cartItem, index) => (
                                         <div key={cartItem.uid} style={{
                                             borderBottom: '1px dashed #ccc',
-                                            paddingBottom: '0.5rem'
+                                            paddingBottom: '0.5rem',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
                                         }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.2rem' }}>
-                                                <span>{cartItem.name}</span>
-                                                <span>{cartItem.price.toLocaleString()}₩</span>
-                                            </div>
-                                            {(cartItem.options.spiciness || (cartItem.options.allergies && cartItem.options.allergies.length > 0)) && (
-                                                <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.3rem' }}>
-                                                    {cartItem.options.spiciness && <span style={{ marginRight: '0.5rem' }}>🔥 맵기: {cartItem.options.spiciness}단계</span>}
-                                                    {cartItem.options.allergies && <span>⚠️ 제외: {cartItem.options.allergies.join(', ')}</span>}
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.2rem' }}>
+                                                    <span>{cartItem.name}</span>
+                                                    <span>{cartItem.price.toLocaleString()}₩</span>
                                                 </div>
-                                            )}
+                                                {(cartItem.options.spiciness || (cartItem.options.allergies && cartItem.options.allergies.length > 0)) && (
+                                                    <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.3rem' }}>
+                                                        {cartItem.options.spiciness && <span style={{ marginRight: '0.5rem' }}>🔥 맵기: {cartItem.options.spiciness}단계</span>}
+                                                        {cartItem.options.allergies && <span>⚠️ 제외: {cartItem.options.allergies.join(', ')}</span>}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <button
+                                                onClick={() => handleRemoveItem(cartItem.uid)}
+                                                style={{
+                                                    marginLeft: '0.5rem',
+                                                    background: 'none',
+                                                    border: 'none',
+                                                    fontSize: '1.2rem',
+                                                    cursor: 'pointer',
+                                                    padding: '0.5rem',
+                                                    color: '#d32f2f'
+                                                }}
+                                                aria-label="메뉴 삭제"
+                                            >
+                                                ❌
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
