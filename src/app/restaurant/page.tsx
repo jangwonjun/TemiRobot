@@ -105,16 +105,39 @@ export default function RestaurantPage() {
         await temiGoTo(waypoint)
 
         console.log(`좌석 ${seatNumber}번(waypoint: ${waypoint})으로 이동 시작`)
-
-        // 도착 이벤트를 기다림 (타임아웃: 30초)
-        // 도착 이벤트가 오지 않으면 타임아웃으로 처리
-        setTimeout(() => {
-          if (isMoving) {
-            console.log('도착 타임아웃 - 자동으로 완료 페이지로 이동')
-            setIsMoving(false)
-            setCurrentPage('move-complete')
+        
+        // 폴링 방식으로 도착 여부 확인
+        const { temiGetCurrentLocation } = await import('@/lib/temi-webview-interface')
+        let checkCount = 0
+        const maxChecks = 30 // 최대 30초 (1초마다 확인)
+        
+        const checkArrival = setInterval(async () => {
+          try {
+            checkCount++
+            const currentLocation = await temiGetCurrentLocation()
+            console.log(`[${checkCount}회] 현재 위치: ${currentLocation}, 목적지: ${waypoint}`)
+            
+            // 현재 위치가 목적지와 일치하면 도착 처리
+            if (currentLocation === waypoint) {
+              clearInterval(checkArrival)
+              console.log('✅ 도착 확인 완료!')
+              setIsMoving(false)
+              setCurrentPage('move-complete')
+              return
+            }
+            
+            // 최대 확인 횟수 초과 시 타임아웃 처리
+            if (checkCount >= maxChecks) {
+              clearInterval(checkArrival)
+              console.log('⏱️ 도착 타임아웃 - 자동으로 완료 페이지로 이동')
+              setIsMoving(false)
+              setCurrentPage('move-complete')
+            }
+          } catch (error) {
+            console.error('위치 확인 실패:', error)
+            // 에러가 발생해도 계속 확인 시도
           }
-        }, 30000)
+        }, 1000) // 1초마다 확인
       } else {
         // WebView가 아닌 경우 기존 API 사용
         const useMock = localStorage.getItem('temi_use_mock') !== 'false'

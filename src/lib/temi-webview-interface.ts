@@ -10,6 +10,7 @@ declare global {
       goTo: (location: string) => void
       speak: (content: string) => void
       dance: () => void
+      getCurrentLocation: () => string
     }
   }
 }
@@ -109,6 +110,31 @@ export async function temiDance(): Promise<void> {
     }
   } else {
     throw new Error('TemiInterface is not available.')
+  }
+}
+
+/**
+ * 테미 로봇의 현재 위치를 반환합니다.
+ * 
+ * @returns 현재 위치의 waypoint 이름 (예: "1", "2", "3", "4")
+ * 
+ * 사용 예시:
+ * - const location = await temiGetCurrentLocation()
+ */
+export async function temiGetCurrentLocation(): Promise<string> {
+  if (isTemiWebViewAvailable() && window.temi) {
+    try {
+      const location = (window.temi as any).getCurrentLocation()
+      console.log(`[TemiInterface] getCurrentLocation: ${location}`)
+      return location || ""
+    } catch (error) {
+      console.error('[TemiInterface] getCurrentLocation error:', error)
+      return ""
+    }
+  } else {
+    // 브라우저 환경에서는 빈 문자열 반환
+    console.warn('[TemiInterface Mock] getCurrentLocation: not available')
+    return ""
   }
 }
 
