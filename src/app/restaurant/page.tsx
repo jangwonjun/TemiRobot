@@ -89,68 +89,36 @@ export default function RestaurantPage() {
     setCurrentPage('moving')
 
     try {
-      // WebView에서 TemiInterface 사용 가능한지 확인
-      const { isTemiWebViewAvailable, temiGoTo, temiSpeak } = await import('@/lib/temi-webview-interface')
+      // 통합 API 사용
+      const { temi } = await import('@/lib/temi-api-unified')
 
-      if (isTemiWebViewAvailable()) {
-        // Android WebView에서 TemiInterface 사용
-        // 좌석 번호(1~4)를 그대로 waypoint로 사용 (SDK에서 1~4로 매핑되어 있음)
-        const waypoint = seatNumber.toString()
-        const guideMessage = `${seatNumber}번 좌석으로 안내해드리겠습니다.`
-
-        // 안내 메시지 먼저
-        await temiSpeak(guideMessage)
-
-        // 좌석으로 이동 (waypoint는 "1", "2", "3", "4" 중 하나)
-        await temiGoTo(waypoint)
-
-        console.log(`좌석 ${seatNumber}번(waypoint: ${waypoint})으로 이동 시작`)
-        
-        // 폴링 방식으로 도착 여부 확인
-        const { temiGetCurrentLocation } = await import('@/lib/temi-webview-interface')
-        let checkCount = 0
-        const maxChecks = 30 // 최대 30초 (1초마다 확인)
-        
-        const checkArrival = setInterval(async () => {
-          try {
-            checkCount++
-            const currentLocation = await temiGetCurrentLocation()
-            console.log(`[${checkCount}회] 현재 위치: ${currentLocation}, 목적지: ${waypoint}`)
-            
-            // 현재 위치가 목적지와 일치하면 도착 처리
-            if (currentLocation === waypoint) {
-              clearInterval(checkArrival)
-              console.log('✅ 도착 확인 완료!')
-              setIsMoving(false)
-              setCurrentPage('move-complete')
-              return
-            }
-            
-            // 최대 확인 횟수 초과 시 타임아웃 처리
-            if (checkCount >= maxChecks) {
-              clearInterval(checkArrival)
-              console.log('⏱️ 도착 타임아웃 - 자동으로 완료 페이지로 이동')
-              setIsMoving(false)
-              setCurrentPage('move-complete')
-            }
-          } catch (error) {
-            console.error('위치 확인 실패:', error)
-            // 에러가 발생해도 계속 확인 시도
+      if (temi.isAvailable()) {
+        // Android WebView에서 통합 API 사용
+        await temi.moveToSeat(seatNumber, {
+          onArrived: (location) => {
+            console.log(`✅ 도착 확인 완료: ${location}번 좌석`)
+            setIsMoving(false)
+            setCurrentPage('move-complete')
+          },
+          onTimeout: () => {
+            console.log('⏱️ 도착 타임아웃 - 자동으로 완료 페이지로 이동')
+            setIsMoving(false)
+            setCurrentPage('move-complete')
           }
-        }, 1000) // 1초마다 확인
+        })
       } else {
-        // WebView가 아닌 경우 기존 API 사용
+        // WebView가 아닌 경우 기존 API 사용 (Mock 환경)
         const useMock = localStorage.getItem('temi_use_mock') !== 'false'
         const TemiApi = useMock
           ? (await import('@/lib/temi-api-mock')).default
           : (await import('@/lib/temi-api')).default
-        const temi = new TemiApi()
+        const temiApi = new TemiApi()
 
         const waypointId = `table-${seatNumber}-waypoint`
-        await temi.moveToLocation(waypointId)
+        await temiApi.moveToLocation(waypointId)
 
         const guideMessage = `${seatNumber}번 좌석으로 안내해드리겠습니다.`
-        await temi.speak(guideMessage)
+        await temiApi.speak(guideMessage)
 
         // Mock 환경에서는 5초 후 완료
         setTimeout(() => {

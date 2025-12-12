@@ -11,22 +11,22 @@ export default function MoveCompletePage({ tableNumber, onComplete }: MoveComple
   useEffect(() => {
     const speakArrivalMessage = async () => {
       try {
-        // WebView에서 TemiInterface 사용 가능한지 확인
-        const { isTemiWebViewAvailable, temiSpeak } = await import('@/lib/temi-webview-interface')
+        // 통합 API 사용
+        const { temi } = await import('@/lib/temi-api-unified')
 
         const arrivalMessage = `${tableNumber}번 자리로 이동 완료되었습니다.`
 
-        if (isTemiWebViewAvailable()) {
-          // Android WebView에서 TemiInterface 사용
-          await temiSpeak(arrivalMessage)
+        if (temi.isAvailable()) {
+          // Android WebView에서 통합 API 사용
+          await temi.speak(arrivalMessage)
         } else {
-          // WebView가 아닌 경우 기존 API 사용
+          // WebView가 아닌 경우 기존 API 사용 (Mock 환경)
           const useMock = localStorage.getItem('temi_use_mock') !== 'false'
           const TemiApi = useMock
             ? (await import('@/lib/temi-api-mock')).default
             : (await import('@/lib/temi-api')).default
-          const temi = new TemiApi()
-          await temi.speak(arrivalMessage)
+          const temiApi = new TemiApi()
+          await temiApi.speak(arrivalMessage)
         }
       } catch (error) {
         console.error('음성 안내 실패:', error)
