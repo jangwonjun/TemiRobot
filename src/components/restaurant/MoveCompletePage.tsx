@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { temi } from '@/lib/temi-api-unified'
 
 interface MoveCompletePageProps {
   tableNumber: number
@@ -11,9 +12,7 @@ export default function MoveCompletePage({ tableNumber, onComplete }: MoveComple
   useEffect(() => {
     const speakArrivalMessage = async () => {
       try {
-        // 통합 API 사용
-        const { temi } = await import('@/lib/temi-api-unified')
-
+        // 통합 API 사용 (정적 import로 변경하여 청크 로드 에러 방지)
         const arrivalMessage = `${tableNumber}번 자리로 이동 완료되었습니다.`
 
         if (temi.isAvailable()) {

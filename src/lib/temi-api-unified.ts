@@ -150,8 +150,45 @@ export class TemiAPI {
     return new Promise((resolve) => {
       let checkCount = 0
       const maxChecks = Math.floor((timeout * 1000) / interval)
+      let checkInterval: NodeJS.Timeout | null = null
+      let eventHandler: ((location: string) => void) | null = null
+      let isResolved = false
 
-      const checkInterval = setInterval(async () => {
+      // 이벤트 기반 도착 감지 (Java에서 window.onTemiArrived 호출)
+      // Java의 OnGoToLocationStatusChangedListener가 SDK 이벤트를 받아서 즉시 호출
+      if (typeof window !== 'undefined') {
+        eventHandler = (location: string) => {
+          if (!isResolved && location === targetLocation) {
+            isResolved = true
+            if (checkInterval) {
+              clearInterval(checkInterval)
+            }
+            // 이벤트 핸들러 제거
+            if (typeof window !== 'undefined') {
+              delete (window as any).onTemiArrived
+            }
+            console.log('✅ 도착 확인 완료! (이벤트 기반 - 실시간)')
+            if (onArrived) {
+              onArrived(location)
+            }
+            resolve(true)
+          }
+        }
+
+        // 전역 이벤트 핸들러 등록 (Java에서 호출할 수 있도록)
+        // Java의 notifyArrived()가 이 함수를 호출함
+        (window as any).onTemiArrived = eventHandler
+      }
+
+      // 폴링 방식 (폴백 - 이벤트가 오지 않을 경우 대비)
+      checkInterval = setInterval(async () => {
+        if (isResolved) {
+          if (checkInterval) {
+            clearInterval(checkInterval)
+          }
+          return
+        }
+
         try {
           checkCount++
           const currentLocation = await this.getCurrentLocation()
@@ -159,8 +196,15 @@ export class TemiAPI {
 
           // 현재 위치가 목적지와 일치하면 도착 처리
           if (currentLocation === targetLocation) {
-            clearInterval(checkInterval)
-            console.log('✅ 도착 확인 완료!')
+            isResolved = true
+            if (checkInterval) {
+              clearInterval(checkInterval)
+            }
+            // 이벤트 핸들러 제거
+            if (typeof window !== 'undefined' && eventHandler) {
+              delete (window as any).onTemiArrived
+            }
+            console.log('✅ 도착 확인 완료! (폴링)')
             if (onArrived) {
               onArrived(currentLocation)
             }
@@ -170,7 +214,14 @@ export class TemiAPI {
 
           // 최대 확인 횟수 초과 시 타임아웃 처리
           if (checkCount >= maxChecks) {
-            clearInterval(checkInterval)
+            isResolved = true
+            if (checkInterval) {
+              clearInterval(checkInterval)
+            }
+            // 이벤트 핸들러 제거
+            if (typeof window !== 'undefined' && eventHandler) {
+              delete (window as any).onTemiArrived
+            }
             console.log('⏱️ 도착 타임아웃')
             if (onTimeout) {
               onTimeout()
@@ -300,6 +351,74 @@ export class TemiAPI {
     if (partySize <= 4) return 2
     if (partySize <= 6) return 3
     return 4
+  }
+
+  /**
+   * 원위치(홈)로 돌아가기
+   * 
+   * @param options 옵션
+   * @returns 도착 여부 (waitForArrival이 true인 경우)
+   * 
+   * @example
+   * // 기본 사용 (안내 메시지 + 이동 + 도착 감지)
+   * await temi.goHome()
+   * 
+   * // 커스텀 메시지
+   * await temi.goHome({
+   *   message: "원위치로 돌아갑니다."
+   * })
+   * 
+   * // 도착 감지 없이 이동만
+   * await temi.goHome({
+   *   waitForArrival: false
+   * })
+   */
+  async goHome(options?: MoveToSeatOptions): Promise<boolean | void> {
+    const opts: MoveToSeatOptions = options || {}
+    const {
+      message,
+      waitForArrival = false, // 원위치는 기본적으로 도착 감지 없이 이동만
+      timeout = 30,
+      onArrived,
+      onTimeout,
+    } = opts
+
+    // 원위치 waypoint (테미 로봇에서 "home" 또는 "0"으로 설정)
+    // 실제 환경에 맞게 조정 필요
+    // 참고: 테미 로봇의 원위치 waypoint 이름을 확인하여 수정하세요
+    const homeLocation = "home" // 또는 "0" 또는 다른 원위치 waypoint
+
+    const guideMessage = message || "원위치로 돌아가겠습니다."
+
+    try {
+      if (!this.isAvailable()) {
+        throw new Error('TemiInterface is not available.')
+      }
+
+      // 1. 안내 메시지
+      await this.speak(guideMessage)
+
+      // 2. 원위치로 이동 (직접 window.temi.goTo 호출 - "1"-"4" 검증 우회)
+      if (typeof window !== 'undefined' && window.temi) {
+        window.temi.goTo(homeLocation)
+        console.log(`원위치(${homeLocation})로 이동 시작`)
+      } else {
+        throw new Error('TemiInterface is not available.')
+      }
+
+      // 3. 도착 감지 (옵션)
+      if (waitForArrival) {
+        return await this.waitForArrival({
+          targetLocation: homeLocation,
+          timeout,
+          onArrived,
+          onTimeout,
+        })
+      }
+    } catch (error) {
+      console.error('원위치 이동 실패:', error)
+      throw error
+    }
   }
 }
 

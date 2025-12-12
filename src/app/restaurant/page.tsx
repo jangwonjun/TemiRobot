@@ -9,6 +9,7 @@ import MoveCompletePage from '@/components/restaurant/MoveCompletePage'
 import AutoReturnPage from '@/components/restaurant/AutoReturnPage'
 import MenuRecommendPage from '@/components/restaurant/MenuRecommendPage'
 import QRPage from '@/components/restaurant/QRPage'
+import { temi } from '@/lib/temi-api-unified'
 
 type PageType =
   | 'main'
@@ -49,23 +50,8 @@ export default function RestaurantPage() {
     setCurrentPage('person-select')
   }
 
-  // 도착 이벤트 핸들러 등록
-  useEffect(() => {
-    // 전역 함수로 등록하여 Android에서 호출 가능하도록
-    if (typeof window !== 'undefined') {
-      (window as any).onTemiArrived = (location: string) => {
-        console.log('도착 이벤트 수신:', location)
-        setIsMoving(false)
-        setCurrentPage('move-complete')
-      }
-    }
-
-    return () => {
-      if (typeof window !== 'undefined') {
-        delete (window as any).onTemiArrived
-      }
-    }
-  }, [])
+  // 주석: 도착 이벤트는 통합 API의 waitForArrival에서 관리하므로 여기서는 제거
+  // 통합 API가 window.onTemiArrived를 등록하고 관리함
 
   const handlePersonConfirm = async (size: number) => {
     setPartySize(size)
@@ -89,9 +75,7 @@ export default function RestaurantPage() {
     setCurrentPage('moving')
 
     try {
-      // 통합 API 사용
-      const { temi } = await import('@/lib/temi-api-unified')
-
+      // 통합 API 사용 (정적 import로 변경하여 청크 로드 에러 방지)
       if (temi.isAvailable()) {
         // Android WebView에서 통합 API 사용
         await temi.moveToSeat(seatNumber, {
