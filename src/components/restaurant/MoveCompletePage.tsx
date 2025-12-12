@@ -14,7 +14,7 @@ export default function MoveCompletePage({ tableNumber, onComplete }: MoveComple
         // WebView에서 TemiInterface 사용 가능한지 확인
         const { isTemiWebViewAvailable, temiSpeak } = await import('@/lib/temi-webview-interface')
 
-        const arrivalMessage = `${tableNumber}번 자리로 이동 완료되었습니다. 즐거운 식사 되세요!`
+        const arrivalMessage = `${tableNumber}번 자리로 이동 완료되었습니다.`
 
         if (isTemiWebViewAvailable()) {
           // Android WebView에서 TemiInterface 사용
@@ -78,16 +78,8 @@ export default function MoveCompletePage({ tableNumber, onComplete }: MoveComple
           fontSize: '2.5rem',
           fontWeight: 'bold',
           color: '#1a1a1a',
-          marginBottom: '2rem'
         }}>
           {tableNumber}번 자리 도착!
-        </div>
-        <div style={{
-          fontSize: '3rem',
-          fontWeight: 'bold',
-          color: '#2e7d32'
-        }}>
-          맛있게 드세요
         </div>
       </div>
 

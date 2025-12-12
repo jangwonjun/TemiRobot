@@ -31,12 +31,12 @@ export default function QRPage({ tableNumber, onHome }: QRPageProps) {
     }
 
     // --- Payment / Sync Logic ---
-    const [view, setView] = React.useState<'qr' | 'payment'>('qr')
+    const [view, setView] = React.useState<'qr' | 'payment' | 'returning'>('qr')
     const [receivedOrder, setReceivedOrder] = React.useState<any>(null)
 
-    // Poll for orders every 2 seconds
+    // Poll for orders
     React.useEffect(() => {
-        if (view === 'payment') return // Stop polling if already paying
+        if (view !== 'qr') return // Only poll in QR view
 
         const interval = setInterval(async () => {
             try {
@@ -48,22 +48,49 @@ export default function QRPage({ tableNumber, onHome }: QRPageProps) {
                     setReceivedOrder(data.order)
                     setView('payment')
                 }
-            } catch (err) {
-                // Ignore polling errors
-            }
+            } catch (err) { }
         }, 2000)
-
         return () => clearInterval(interval)
     }, [tableNumber, view])
 
-    const handlePaymentComplete = async () => {
-        // Clear order from server
-        await fetch(`/api/order/sync?tableId=${tableNumber}`, { method: 'DELETE' })
+    // Auto-return timer
+    React.useEffect(() => {
+        if (view === 'returning') {
+            const timer = setTimeout(() => {
+                onHome()
+            }, 5000)
+            return () => clearTimeout(timer)
+        }
+    }, [view, onHome])
 
-        alert('결제가 완료되었습니다! 맛있게 드세요. 😊')
-        // Return to Home or Reset
-        onHome() // Or just close payment view to show QR again? user flow implies "Enjoy your meal" end.
-        // Let's go to Home as requested by "Enjoy your meal" flow usually ending interaction.
+    const handlePaymentComplete = async () => {
+        await fetch(`/api/order/sync?tableId=${tableNumber}`, { method: 'DELETE' })
+        setView('returning')
+    }
+
+    if (view === 'returning') {
+        return (
+            <div className="hanji-background" style={{
+                height: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '2rem',
+                fontFamily: 'Gowun Batang, serif'
+            }}>
+                <h1 style={{ fontFamily: 'Gamja Flower, cursive', fontSize: '3rem', color: '#2e7d32', marginBottom: '2rem' }}>
+                    주문이 완료되었습니다!
+                </h1>
+                <div style={{ fontSize: '1.5rem', color: '#555', marginBottom: '3rem', textAlign: 'center' }}>
+                    맛있게 드세요. <br />
+                    저는 다시 원래 자리로 돌아가겠습니다. 🤖
+                </div>
+                <div style={{ fontSize: '1.2rem', color: '#888' }}>
+                    5초 후 자동으로 복귀합니다...
+                </div>
+            </div>
+        )
     }
 
     if (view === 'payment' && receivedOrder) {
