@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { QRCodeSVG } from 'qrcode.react'
 import React, { useState, useEffect } from 'react'
+import { temi } from '@/lib/temi-api-unified'
 
 interface QRPageProps {
     tableNumber: number
@@ -53,9 +54,29 @@ export default function QRPage({ tableNumber, onHome }: QRPageProps) {
         return () => clearInterval(interval)
     }, [tableNumber, view])
 
-    // Auto-return timer
+    // Auto-return timer 및 도크 복귀
     React.useEffect(() => {
         if (view === 'returning') {
+            // 도크로 복귀
+            const returnToDock = async () => {
+                try {
+                    if (temi.isAvailable()) {
+                        // 2초 후 도크로 이동 (메시지를 먼저 보여주기 위해)
+                        setTimeout(async () => {
+                            await temi.goHome({
+                                message: "결제가 완료되었습니다. 도크로 돌아가겠습니다.",
+                                waitForArrival: false // 도착 감지 없이 이동만
+                            })
+                        }, 2000)
+                    }
+                } catch (error) {
+                    console.error('도크 복귀 실패:', error)
+                }
+            }
+            
+            returnToDock()
+            
+            // 5초 후 홈으로 복귀
             const timer = setTimeout(() => {
                 onHome()
             }, 5000)
