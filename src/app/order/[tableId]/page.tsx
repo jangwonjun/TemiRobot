@@ -30,6 +30,7 @@ interface CartItem {
 const CATEGORIES = ['메인', '사이드', '음료', '주류']
 
 const MENU_ITEMS: MenuItem[] = [
+    // --- MAIN ---
     {
         id: 1,
         category: '메인',
@@ -50,14 +51,53 @@ const MENU_ITEMS: MenuItem[] = [
         availableAllergies: ['대두', '참기름']
     },
     {
-        id: 3,
-        category: '사이드',
+        id: 10,
+        category: '메인',
         name: '육전',
         price: 15000,
         description: '계란옷 입혀 노릇하게 구워낸 소고기 육전',
         imageColor: '#ffd54f',
         availableAllergies: ['계란', '소고기']
     },
+    {
+        id: 11,
+        category: '메인',
+        name: '치즈 감자전',
+        price: 13000,
+        description: '바삭한 감자채와 고소한 치즈의 만남',
+        imageColor: '#fff176',
+        availableAllergies: ['치즈', '감자']
+    },
+    {
+        id: 12,
+        category: '메인',
+        name: '마약 옥수수전',
+        price: 12000,
+        description: '달콤 짭짤한 옥수수 알갱이가 톡톡 터지는 전',
+        imageColor: '#ffeb3b',
+        availableAllergies: ['옥수수', '우유']
+    },
+    {
+        id: 13,
+        category: '메인',
+        name: '두부김치',
+        price: 16000,
+        description: '따뜻한 손두부와 매콤달콤 볶음김치',
+        imageColor: '#ffcc80',
+        availableAllergies: ['돼지고기', '두부', '참기름']
+    },
+    {
+        id: 14,
+        category: '메인',
+        name: '차돌 된장찌개',
+        price: 9000,
+        description: '차돌박이가 듬뿍 들어간 구수한 시골 된장찌개',
+        imageColor: '#d7ccc8',
+        hasSpiciness: true,
+        availableAllergies: ['대두', '소고기']
+    },
+
+    // --- SIDE ---
     {
         id: 4,
         category: '사이드',
@@ -68,6 +108,35 @@ const MENU_ITEMS: MenuItem[] = [
         availableAllergies: ['메밀', '김치', '돼지고기']
     },
     {
+        id: 20,
+        category: '사이드',
+        name: '계란후라이 (3개)',
+        price: 3000,
+        description: '들기름에 구워 더욱 고소한 반숙 후라이',
+        imageColor: '#fff9c4',
+        availableAllergies: ['계란']
+    },
+    {
+        id: 21,
+        category: '사이드',
+        name: '스팸구이',
+        price: 5000,
+        description: '밥도둑 스팸을 노릇노릇하게 구워냈어요',
+        imageColor: '#f48fb1',
+        availableAllergies: ['돼지고기']
+    },
+    {
+        id: 22,
+        category: '사이드',
+        name: '도토리묵 무침',
+        price: 8000,
+        description: '새콤달콤한 양념과 아삭한 오이의 조화',
+        imageColor: '#8d6e63',
+        availableAllergies: ['참기름', '견과류']
+    },
+
+    // --- DRINKS ---
+    {
         id: 5,
         category: '음료',
         name: '콜라',
@@ -76,12 +145,54 @@ const MENU_ITEMS: MenuItem[] = [
         imageColor: '#000000'
     },
     {
+        id: 30,
+        category: '음료',
+        name: '제로 콜라',
+        price: 2000,
+        description: '부담 없는 코카콜라 제로 355ml',
+        imageColor: '#212121'
+    },
+    {
+        id: 31,
+        category: '음료',
+        name: '사이다',
+        price: 2000,
+        description: '칠성사이다 355ml',
+        imageColor: '#4caf50'
+    },
+    {
+        id: 32,
+        category: '음료',
+        name: '환타 파인',
+        price: 2000,
+        description: '환타 파인애플맛 355ml',
+        imageColor: '#ff9800'
+    },
+
+    // --- ALCOHOL ---
+    {
         id: 6,
         category: '주류',
         name: '소주',
         price: 5000,
-        description: '참이슬 / 처음처럼',
+        description: '참이슬 / 처음처럼 / 진로 (택1 가능)',
         imageColor: '#81c784'
+    },
+    {
+        id: 40,
+        category: '주류',
+        name: '생막걸리',
+        price: 4000,
+        description: '장수 생막걸리',
+        imageColor: '#f0f4c3'
+    },
+    {
+        id: 41,
+        category: '주류',
+        name: '병맥주',
+        price: 5000,
+        description: '테라 / 카스 (택1 가능)',
+        imageColor: '#ffb74d'
     }
 ]
 
