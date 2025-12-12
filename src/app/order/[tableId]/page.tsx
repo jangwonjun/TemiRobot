@@ -86,6 +86,9 @@ const MENU_ITEMS: MenuItem[] = [
 ]
 
 export default function OrderPage({ params }: { params: { tableId: string } }) {
+    // View State: 'menu' | 'confirmation' | 'success'
+    const [view, setView] = useState<'menu' | 'confirmation' | 'success'>('menu')
+
     const [activeTab, setActiveTab] = useState('메인')
     const [cart, setCart] = useState<CartItem[]>([])
 
@@ -142,16 +145,179 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
         )
     }
 
+    // Go to Confirmation View
     const handlePlaceOrder = () => {
         if (cart.length === 0) {
             alert('장바구니가 비어있습니다.')
             return
         }
-        alert(`총 ${totalPrice.toLocaleString()}원 주문이 접수되었습니다!`)
-        setCart([])
         setIsCartModalOpen(false)
+        setView('confirmation')
     }
 
+    // Finalize Order
+    const handleFinalOrder = () => {
+        // Here you would send the order to the backend
+        setView('success')
+        setCart([])
+    }
+
+    // Back to Menu (from Confirmation)
+    const handleAddMore = () => {
+        setView('menu')
+    }
+
+    // Back to Menu (from Success - Reset)
+    const handleBackToMenu = () => {
+        setView('menu')
+    }
+
+    // --- RENDER: CONFIRMATION VIEW ---
+    if (view === 'confirmation') {
+        return (
+            <div className="hanji-background" style={{
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                fontFamily: 'Gowun Batang, serif',
+                padding: '2rem'
+            }}>
+                <h1 style={{ fontFamily: 'Gamja Flower, cursive', fontSize: '2.5rem', textAlign: 'center', color: '#2e7d32', marginBottom: '2rem' }}>
+                    주문 확인
+                </h1>
+
+                <div className="cream-paper" style={{
+                    flex: 1,
+                    padding: '2rem',
+                    marginBottom: '2rem',
+                    overflowY: 'auto',
+                    border: '2px dashed #2e7d32'
+                }}>
+                    <div style={{ fontSize: '1.2rem', marginBottom: '1rem', textAlign: 'center', fontWeight: 'bold' }}>
+                        주문 내용을 확인해주세요.
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {cart.map((cartItem) => (
+                            <div key={cartItem.uid} style={{
+                                borderBottom: '1px solid #ccc',
+                                paddingBottom: '0.5rem',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                            }}>
+                                <div>
+                                    <div style={{ fontSize: '1.3rem', fontWeight: 'bold' }}>{cartItem.name}</div>
+                                    {(cartItem.options.spiciness || (cartItem.options.allergies && cartItem.options.allergies.length > 0)) && (
+                                        <div style={{ fontSize: '1rem', color: '#666', marginTop: '0.3rem' }}>
+                                            {cartItem.options.spiciness && <span style={{ marginRight: '0.5rem' }}>🔥 맵기: {cartItem.options.spiciness}단계</span>}
+                                            {cartItem.options.allergies && <span>⚠️ 제외: {cartItem.options.allergies.join(', ')}</span>}
+                                        </div>
+                                    )}
+                                </div>
+                                <div style={{ fontSize: '1.3rem', fontWeight: 'bold' }}>
+                                    {cartItem.price.toLocaleString()}₩
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div style={{
+                        marginTop: '2rem',
+                        paddingTop: '1rem',
+                        borderTop: '2px solid #2e7d32',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        fontSize: '1.8rem',
+                        fontWeight: 'bold',
+                        color: '#1b5e20'
+                    }}>
+                        <span>총 결제금액</span>
+                        <span>{totalPrice.toLocaleString()}₩</span>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button
+                        onClick={handleAddMore}
+                        style={{
+                            flex: 1,
+                            padding: '1.2rem',
+                            fontSize: '1.3rem',
+                            border: '3px solid #555',
+                            backgroundColor: 'white',
+                            color: '#333',
+                            borderRadius: '12px',
+                            fontFamily: 'Gamja Flower, cursive',
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        더 담을래요
+                    </button>
+                    <button
+                        onClick={handleFinalOrder}
+                        style={{
+                            flex: 2,
+                            padding: '1.2rem',
+                            fontSize: '1.5rem',
+                            border: 'none',
+                            backgroundColor: '#2e7d32',
+                            color: 'white',
+                            borderRadius: '12px',
+                            fontFamily: 'Gamja Flower, cursive',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.2)'
+                        }}
+                    >
+                        주문할게요!
+                    </button>
+                </div>
+            </div>
+        )
+    }
+
+    // --- RENDER: SUCCESS VIEW ---
+    if (view === 'success') {
+        return (
+            <div className="hanji-background" style={{
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                fontFamily: 'Gamja Flower, cursive',
+                color: '#2e7d32'
+            }}>
+                <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>🎉</div>
+                <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>주문이 완료되었습니다!</h1>
+                <p style={{ fontSize: '1.5rem', color: '#555', fontFamily: 'Gowun Batang, serif', marginBottom: '3rem' }}>
+                    맛있는 음식을 곧 준비해드리겠습니다.
+                </p>
+
+                <button
+                    onClick={handleBackToMenu}
+                    style={{
+                        padding: '1rem 3rem',
+                        fontSize: '1.5rem',
+                        border: '3px solid #2e7d32',
+                        backgroundColor: 'white',
+                        color: '#2e7d32',
+                        borderRadius: '50px',
+                        fontFamily: 'Gamja Flower, cursive',
+                        fontWeight: 'bold',
+                        cursor: 'pointer'
+                    }}
+                >
+                    메뉴판으로 돌아가기
+                </button>
+            </div>
+        )
+    }
+
+    // --- RENDER: MENU VIEW ---
     return (
         <div className="hanji-background" style={{
             minHeight: '100vh',
