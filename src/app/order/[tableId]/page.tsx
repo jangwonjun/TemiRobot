@@ -239,34 +239,9 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
     // Calculate Total
     const totalPrice = cart.reduce((acc, item) => acc + item.price, 0)
 
-    // 주문 완료 시 원위치로 돌아가기 (핸드폰에서는 제거 - Temi가 결제 완료를 감지하여 처리)
-    // useEffect(() => {
-    //     if (view === 'success') {
-    //         const returnToHome = async () => {
-    //             try {
-    //                 // 통합 API 사용 (정적 import로 변경하여 청크 로드 에러 방지)
-    //                 if (temi.isAvailable()) {
-    //                     // 2초 후 원위치로 이동 (주문 완료 메시지를 먼저 보여주기 위해)
-    //                     setTimeout(async () => {
-    //                         await temi.goHome({
-    //                             message: "주문이 완료되었습니다. 원위치로 돌아가겠습니다.",
-    //                             waitForArrival: false // 도착 감지 없이 이동만
-    //                         })
-    //                     }, 2000)
-    //                 }
-    //             } catch (error) {
-    //                 console.error('원위치 이동 실패:', error)
-    //             }
-    //         }
-
-    //         returnToHome()
-    //     }
-    // }, [view])
-
     // Handlers
     const handleItemClick = (item: MenuItem) => {
         setSelectedItem(item)
-        // Reset options
         setSpiciness(1)
         setCheckedAllergies([])
         setIsOptionModalOpen(true)
@@ -316,7 +291,6 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
     // Finalize Order
     const handleFinalOrder = async () => {
         try {
-            // Send order to the robot (Desktop) via API
             await fetch('/api/order/sync', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -327,11 +301,6 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                 })
             })
 
-            // 실제 결제 처리 (예: 결제 API 호출)
-            // const paymentResult = await processPayment(cart, totalPrice)
-            // 여기서는 시뮬레이션으로 바로 결제 완료 처리
-            
-            // 결제 완료 후 Temi에 알림 (PUT으로 상태 업데이트)
             await fetch('/api/order/sync', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -348,12 +317,10 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
         }
     }
 
-    // Back to Menu (from Confirmation)
     const handleAddMore = () => {
         setView('menu')
     }
 
-    // Back to Menu (from Success - Reset)
     const handleBackToMenu = () => {
         setView('menu')
     }
@@ -361,105 +328,116 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
     // --- RENDER: CONFIRMATION VIEW ---
     if (view === 'confirmation') {
         return (
-            <div className="hanji-background" style={{
+            <div className="wood-background" style={{
                 minHeight: '100vh',
                 display: 'flex',
                 flexDirection: 'column',
+                alignItems: 'center',
+                padding: '1rem',
                 fontFamily: 'Gowun Batang, serif',
-                padding: '2rem'
             }}>
-                <h1 style={{ fontFamily: 'Gamja Flower, cursive', fontSize: '2.5rem', textAlign: 'center', color: '#2e7d32', marginBottom: '2rem' }}>
-                    주문 확인
-                </h1>
-
-                <div className="cream-paper" style={{
+                <div className="paper-sheet" style={{
+                    width: '100%',
+                    maxWidth: '600px',
+                    padding: '2rem 1.5rem',
                     flex: 1,
-                    padding: '2rem',
-                    marginBottom: '2rem',
-                    overflowY: 'auto',
-                    border: '2px dashed #2e7d32'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative',
+                    borderRadius: '4px'
                 }}>
-                    <div style={{ fontSize: '1.2rem', marginBottom: '1rem', textAlign: 'center', fontWeight: 'bold' }}>
-                        주문 내용을 확인해주세요.
-                    </div>
+                    <div className="paper-pin" style={{ top: '10px', left: '10px' }}></div>
+                    <div className="paper-pin" style={{ top: '10px', right: '10px' }}></div>
+                    <div className="paper-pin" style={{ bottom: '10px', left: '10px' }}></div>
+                    <div className="paper-pin" style={{ bottom: '10px', right: '10px' }}></div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {cart.map((cartItem) => (
-                            <div key={cartItem.uid} style={{
-                                borderBottom: '1px solid #ccc',
-                                paddingBottom: '0.5rem',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center'
-                            }}>
-                                <div>
-                                    <div style={{ fontSize: '1.3rem', fontWeight: 'bold' }}>{cartItem.name}</div>
-                                    {(cartItem.options.spiciness || (cartItem.options.allergies && cartItem.options.allergies.length > 0)) && (
-                                        <div style={{ fontSize: '1rem', color: '#666', marginTop: '0.3rem' }}>
-                                            {cartItem.options.spiciness && <span style={{ marginRight: '0.5rem' }}>🔥 맵기: {cartItem.options.spiciness}단계</span>}
-                                            {cartItem.options.allergies && <span>⚠️ 제외: {cartItem.options.allergies.join(', ')}</span>}
-                                        </div>
-                                    )}
-                                </div>
-                                <div style={{ fontSize: '1.3rem', fontWeight: 'bold' }}>
-                                    {cartItem.price.toLocaleString()}₩
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    <h1 style={{ fontFamily: 'Gamja Flower, cursive', fontSize: '2.5rem', textAlign: 'center', color: '#3e2723', marginBottom: '2rem', marginTop: '1rem' }}>
+                        주문 확인
+                    </h1>
 
                     <div style={{
-                        marginTop: '2rem',
-                        paddingTop: '1rem',
-                        borderTop: '2px solid #2e7d32',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        fontSize: '1.8rem',
-                        fontWeight: 'bold',
-                        color: '#1b5e20'
+                        flex: 1,
+                        marginBottom: '2rem',
+                        overflowY: 'auto',
+                        border: '2px dashed #8d6e63',
+                        padding: '1rem',
+                        backgroundColor: '#fffdf5'
                     }}>
-                        <span>총 결제금액</span>
-                        <span>{totalPrice.toLocaleString()}₩</span>
-                    </div>
-                </div>
+                        <div style={{ fontSize: '1.2rem', marginBottom: '1rem', textAlign: 'center', fontWeight: 'bold' }}>
+                            주문 내용을 확인해주세요.
+                        </div>
 
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                    <button
-                        onClick={handleAddMore}
-                        style={{
-                            flex: 1,
-                            padding: '1.2rem',
-                            fontSize: '1.3rem',
-                            border: '3px solid #555',
-                            backgroundColor: 'white',
-                            color: '#333',
-                            borderRadius: '12px',
-                            fontFamily: 'Gamja Flower, cursive',
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {cart.map((cartItem) => (
+                                <div key={cartItem.uid} style={{
+                                    borderBottom: '1px solid #d7ccc8',
+                                    paddingBottom: '0.5rem',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <div>
+                                        <div style={{ fontSize: '1.3rem', fontWeight: 'bold' }}>{cartItem.name}</div>
+                                        {(cartItem.options.spiciness || (cartItem.options.allergies && cartItem.options.allergies.length > 0)) && (
+                                            <div style={{ fontSize: '1rem', color: '#6d4c41', marginTop: '0.3rem' }}>
+                                                {cartItem.options.spiciness && <span style={{ marginRight: '0.5rem' }}>🔥 맵기: {cartItem.options.spiciness}단계</span>}
+                                                {cartItem.options.allergies && <span>⚠️ 제외: {cartItem.options.allergies.join(', ')}</span>}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div style={{ fontSize: '1.3rem', fontWeight: 'bold' }}>
+                                        {cartItem.price.toLocaleString()}₩
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div style={{
+                            marginTop: '2rem',
+                            paddingTop: '1rem',
+                            borderTop: '2px solid #3e2723',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            fontSize: '1.8rem',
                             fontWeight: 'bold',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        더 담을래요
-                    </button>
-                    <button
-                        onClick={handleFinalOrder}
-                        style={{
-                            flex: 2,
-                            padding: '1.2rem',
-                            fontSize: '1.5rem',
-                            border: 'none',
-                            backgroundColor: '#2e7d32',
-                            color: 'white',
-                            borderRadius: '12px',
-                            fontFamily: 'Gamja Flower, cursive',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                            boxShadow: '0 4px 6px rgba(0,0,0,0.2)'
-                        }}
-                    >
-                        주문할게요!
-                    </button>
+                            color: '#3e2723'
+                        }}>
+                            <span>총 결제금액</span>
+                            <span>{totalPrice.toLocaleString()}₩</span>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '1rem', zIndex: 10 }}>
+                        <button
+                            onClick={handleAddMore}
+                            className="wood-frame"
+                            style={{
+                                flex: 1,
+                                padding: '1rem',
+                                fontSize: '1.3rem',
+                                color: '#3e2723',
+                                cursor: 'pointer',
+                                border: '6px solid #5d4037'
+                            }}
+                        >
+                            더 담기
+                        </button>
+                        <button
+                            onClick={handleFinalOrder}
+                            className="wood-sign"
+                            style={{
+                                flex: 2,
+                                padding: '1rem',
+                                fontSize: '1.5rem',
+                                color: 'white',
+                                cursor: 'pointer',
+                                border: 'none'
+                            }}
+                        >
+                            주문하기
+                        </button>
+                    </div>
                 </div>
             </div>
         )
@@ -468,73 +446,97 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
     // --- RENDER: SUCCESS VIEW ---
     if (view === 'success') {
         return (
-            <div className="hanji-background" style={{
+            <div className="wood-background" style={{
                 minHeight: '100vh',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
+                padding: '1rem',
                 fontFamily: 'Gamja Flower, cursive',
-                color: '#2e7d32'
             }}>
-                <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>🎉</div>
-                <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>주문이 완료되었습니다!</h1>
-                <p style={{ fontSize: '1.5rem', color: '#555', fontFamily: 'Gowun Batang, serif', marginBottom: '3rem' }}>
-                    맛있는 음식을 곧 준비해드리겠습니다.
-                </p>
+                <div className="paper-sheet" style={{
+                    padding: '3rem',
+                    borderRadius: '4px',
+                    textAlign: 'center',
+                    maxWidth: '500px',
+                    width: '100%'
+                }}>
+                    <div className="paper-pin" style={{ top: '10px', left: '10px' }}></div>
+                    <div className="paper-pin" style={{ top: '10px', right: '10px' }}></div>
+                    <div className="paper-pin" style={{ bottom: '10px', left: '10px' }}></div>
+                    <div className="paper-pin" style={{ bottom: '10px', right: '10px' }}></div>
 
-                <button
-                    onClick={handleBackToMenu}
-                    style={{
-                        padding: '1rem 3rem',
-                        fontSize: '1.5rem',
-                        border: '3px solid #2e7d32',
-                        backgroundColor: 'white',
-                        color: '#2e7d32',
-                        borderRadius: '50px',
-                        fontFamily: 'Gamja Flower, cursive',
-                        fontWeight: 'bold',
-                        cursor: 'pointer'
-                    }}
-                >
-                    메뉴판으로 돌아가기
-                </button>
+                    <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>🎉</div>
+                    <h1 style={{ fontSize: '3rem', marginBottom: '1rem', color: '#3e2723' }}>주문이 완료되었습니다!</h1>
+                    <p style={{ fontSize: '1.5rem', color: '#5d4037', fontFamily: 'Gowun Batang, serif', marginBottom: '3rem' }}>
+                        맛있는 음식을 곧 준비해드리겠습니다.
+                    </p>
+
+                    <button
+                        onClick={handleBackToMenu}
+                        className="wood-sign"
+                        style={{
+                            padding: '1rem 3rem',
+                            fontSize: '1.5rem',
+                            margin: '0 auto',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        메뉴판으로 돌아가기
+                    </button>
+                </div>
             </div>
         )
     }
 
     // --- RENDER: MENU VIEW ---
     return (
-        <div className="hanji-background" style={{
+        <div className="wood-background" style={{
             minHeight: '100vh',
-            paddingBottom: '100px', // Space for fixed bottom button
+            padding: '1rem',
             fontFamily: 'Gowun Batang, serif',
-            color: '#1a1a1a'
+            color: '#1a1a1a',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
         }}>
-            {/* 1. Header (Sticky) */}
-            <header style={{
-                position: 'sticky',
-                top: 0,
-                backgroundColor: '#fdfbf7', // hanji-bg
-                zIndex: 100,
-                borderBottom: '3px solid #2e7d32', // Green border
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            <div className="wood-sign swing-hover" style={{
+                marginBottom: '1rem',
+                padding: '1rem 2rem',
+                fontSize: '2rem',
+                width: '100%',
+                maxWidth: '600px',
+                zIndex: 20
             }}>
-                <div style={{
-                    padding: '1rem',
-                    textAlign: 'center',
-                    fontSize: '1.8rem',
-                    fontWeight: 'bold',
-                    color: '#2e7d32', // Green title
-                    fontFamily: 'Gamja Flower, cursive'
-                }}>
-                    팡씨네 할머니
-                </div>
+                팡씨네 할머니
+            </div>
 
-                {/* Categories (Tabs) */}
+            <div className="paper-sheet" style={{
+                width: '100%',
+                maxWidth: '600px',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                padding: '2rem 1.5rem',
+                position: 'relative',
+                marginBottom: '4rem'
+            }}>
+                <div className="paper-pin" style={{ top: '12px', left: '12px' }}></div>
+                <div className="paper-pin" style={{ top: '12px', right: '12px' }}></div>
+                <div className="paper-pin" style={{ bottom: '12px', left: '12px' }}></div>
+                <div className="paper-pin" style={{ bottom: '12px', right: '12px' }}></div>
+
                 <div style={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 10,
+                    backgroundColor: '#fffde7',
+                    borderBottom: '2px dashed #8d6e63',
+                    paddingBottom: '1rem',
+                    marginBottom: '1.5rem',
                     display: 'flex',
-                    borderTop: '2px solid #2e7d32' // Green border
+                    gap: '0.5rem'
                 }}>
                     {CATEGORIES.map(category => (
                         <button
@@ -542,100 +544,100 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                             onClick={() => setActiveTab(category)}
                             style={{
                                 flex: 1,
-                                padding: '1rem 0.5rem',
-                                border: 'none',
-                                background: activeTab === category ? '#2e7d32' : 'transparent',
-                                color: activeTab === category ? 'white' : '#2e7d32',
+                                padding: '0.6rem 0',
+                                background: activeTab === category ? '#5d4037' : 'transparent',
+                                color: activeTab === category ? '#fff' : '#5d4037',
                                 fontSize: '1.1rem',
                                 fontWeight: 'bold',
                                 fontFamily: 'Gamja Flower, cursive',
                                 cursor: 'pointer',
-                                borderRight: '1px solid #2e7d32'
+                                borderRadius: '8px',
+                                transition: 'all 0.2s',
+                                border: activeTab === category ? 'none' : '1px solid #a1887f'
                             }}
                         >
                             {category}
                         </button>
                     ))}
                 </div>
-            </header>
 
-            {/* 2. Menu List */}
-            <main style={{ padding: '1rem' }}>
-                {filteredItems.map(item => (
-                    <div
-                        key={item.id}
-                        onClick={() => handleItemClick(item)}
-                        style={{
-                            display: 'flex',
-                            marginBottom: '1rem',
-                            border: '2px solid #2e7d32', // Green border for card
-                            borderRadius: '8px',
-                            overflow: 'hidden',
-                            backgroundColor: 'white',
-                            boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
-                            cursor: 'pointer',
-                            transition: 'transform 0.1s',
-                        }}
-                    >
-                        {/* Image Area */}
-                        <div style={{
-                            width: '100px',
-                            height: '100px',
-                            backgroundColor: item.imageColor || '#eee',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
-                            fontSize: '0.9rem',
-                            fontWeight: 'bold',
-                            flexShrink: 0
-                        }}>
-                            {item.imagePath ? (
-                                <img
-                                    src={item.imagePath}
-                                    alt={item.name}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                />
-                            ) : (
-                                <span>사진</span>
-                            )}
-                        </div>
-
-                        {/* Content Area */}
-                        <div style={{
-                            padding: '0.8rem',
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <span style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{item.name}</span>
-                                <span style={{ fontSize: '1rem', fontWeight: 'bold', color: '#2e7d32' }}>
-                                    {item.price.toLocaleString()}₩
-                                </span>
-                            </div>
+                <main style={{ flex: 1 }}>
+                    {filteredItems.map(item => (
+                        <div
+                            key={item.id}
+                            onClick={() => handleItemClick(item)}
+                            style={{
+                                display: 'flex',
+                                marginBottom: '1rem',
+                                borderBottom: '1px solid #d7ccc8',
+                                paddingBottom: '1rem',
+                                cursor: 'pointer'
+                            }}
+                        >
                             <div style={{
-                                fontSize: '0.9rem',
-                                color: '#555',
-                                marginTop: '0.5rem',
-                                lineHeight: '1.3'
+                                width: '100px',
+                                height: '100px',
+                                backgroundColor: '#fff',
+                                padding: '4px',
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                                transform: `rotate(${Math.random() * 4 - 2}deg)`,
+                                flexShrink: 0,
+                                marginRight: '1rem'
                             }}>
-                                {item.description}
+                                <div style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    backgroundColor: item.imageColor || '#eee',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    overflow: 'hidden'
+                                }}>
+                                    {item.imagePath ? (
+                                        <img
+                                            src={item.imagePath}
+                                            alt={item.name}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
+                                    ) : (
+                                        <span style={{ fontSize: '0.8rem' }}>사진</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div style={{
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                paddingTop: '0.2rem'
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <span style={{ fontSize: '1.2rem', fontWeight: 'bold', fontFamily: 'Gamja Flower, cursive', color: '#3e2723' }}>{item.name}</span>
+                                    <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#d84315' }}>
+                                        {item.price.toLocaleString()}
+                                    </span>
+                                </div>
+                                <div style={{
+                                    fontSize: '0.95rem',
+                                    color: '#5d4037',
+                                    marginTop: '0.3rem',
+                                    lineHeight: '1.3'
+                                }}>
+                                    {item.description}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
 
-                {/* Empty State */}
-                {filteredItems.length === 0 && (
-                    <div style={{ textAlign: 'center', padding: '3rem', color: '#888' }}>
-                        준비 중인 메뉴입니다.
-                    </div>
-                )}
-            </main>
+                    {filteredItems.length === 0 && (
+                        <div style={{ textAlign: 'center', padding: '3rem', color: '#8d6e63' }}>
+                            준비 중인 메뉴입니다.
+                        </div>
+                    )}
+                </main>
+            </div>
 
-            {/* 3. Bottom Action (Order History) */}
             <div style={{
                 position: 'fixed',
                 bottom: '20px',
@@ -645,18 +647,11 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                 alignItems: 'center',
                 gap: '1rem'
             }}>
-                {/* Price Display (Separate) */}
                 {totalPrice > 0 && (
-                    <div style={{
-                        backgroundColor: '#fff',
-                        border: '2px solid #2e7d32',
-                        borderRadius: '12px',
-                        padding: '1rem 1.5rem',
+                    <div className="wood-sign" style={{
+                        padding: '0.8rem 1.2rem',
                         fontSize: '1.2rem',
-                        fontWeight: 'bold',
-                        color: '#2e7d32',
-                        boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
-                        fontFamily: 'Gamja Flower, cursive',
+                        borderRadius: '30px'
                     }}>
                         {totalPrice.toLocaleString()}₩
                     </div>
@@ -664,19 +659,14 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
 
                 <button
                     onClick={() => setIsCartModalOpen(true)}
+                    className="recommend-btn"
                     style={{
-                        backgroundColor: '#2e7d32', // Green button
-                        color: 'white',
-                        border: '2px solid #1b5e20',
-                        borderRadius: '12px',
-                        padding: '1rem 1.5rem',
+                        padding: '0.8rem 1.5rem',
                         fontSize: '1.1rem',
-                        fontWeight: 'bold',
-                        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-                        fontFamily: 'Gamja Flower, cursive',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.5rem'
+                        gap: '0.5rem',
+                        borderRadius: '30px'
                     }}
                 >
                     <span>📄</span>
@@ -684,7 +674,6 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                 </button>
             </div>
 
-            {/* 4. Option Modal */}
             {isOptionModalOpen && selectedItem && (
                 <div style={{
                     position: 'fixed',
@@ -692,32 +681,34 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                     left: 0,
                     width: '100%',
                     height: '100%',
-                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    backgroundColor: 'rgba(0,0,0,0.6)',
                     zIndex: 200,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '1rem'
+                    padding: '1rem',
+                    backdropFilter: 'blur(3px)'
                 }}>
-                    <div className="hanji-background" style={{
+                    <div className="paper-sheet" style={{
                         width: '100%',
                         maxWidth: '400px',
-                        backgroundColor: '#fdfbf7',
-                        border: '4px solid #2e7d32',
-                        borderRadius: '12px',
                         padding: '2rem',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '1.5rem'
+                        gap: '1.5rem',
+                        position: 'relative',
+                        borderRadius: '2px'
                     }}>
-                        <h2 style={{ fontFamily: 'Gamja Flower, cursive', fontSize: '2rem', textAlign: 'center', color: '#2e7d32', margin: 0 }}>
+                        <div className="paper-pin" style={{ top: '10px', left: '10px' }}></div>
+                        <div className="paper-pin" style={{ top: '10px', right: '10px' }}></div>
+
+                        <h2 style={{ fontFamily: 'Gamja Flower, cursive', fontSize: '2rem', textAlign: 'center', color: '#3e2723', margin: '0.5rem 0' }}>
                             {selectedItem.name}
                         </h2>
 
-                        {/* Spiciness (if applicable) */}
                         {selectedItem.hasSpiciness && (
                             <div>
-                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'center', color: '#5d4037' }}>
                                     맵기 조절
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
@@ -729,12 +720,13 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                                                 width: '40px',
                                                 height: '40px',
                                                 borderRadius: '50%',
-                                                border: '2px solid #2e7d32',
-                                                backgroundColor: spiciness === level ? '#2e7d32' : 'white',
-                                                color: spiciness === level ? 'white' : '#2e7d32',
+                                                border: '2px solid #5d4037',
+                                                backgroundColor: spiciness === level ? '#5d4037' : 'transparent',
+                                                color: spiciness === level ? 'white' : '#5d4037',
                                                 fontSize: '1.2rem',
                                                 fontWeight: 'bold',
-                                                cursor: 'pointer'
+                                                cursor: 'pointer',
+                                                fontFamily: 'Gamja Flower, cursive'
                                             }}
                                         >
                                             {level}
@@ -744,31 +736,31 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                             </div>
                         )}
 
-                        {/* Allergies (if available) */}
                         {selectedItem.availableAllergies && selectedItem.availableAllergies.length > 0 && (
                             <div>
-                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'center', color: '#5d4037' }}>
                                     알러지 체크 (제외할 재료)
                                 </div>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px' }}>
                                     {selectedItem.availableAllergies.map(allergy => (
                                         <label key={allergy} style={{
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: '5px',
-                                            fontSize: '1.1rem',
+                                            fontSize: '1rem',
                                             cursor: 'pointer',
                                             padding: '5px 10px',
-                                            border: '1px solid #ccc',
+                                            border: '1px solid #8d6e63',
                                             borderRadius: '8px',
-                                            backgroundColor: checkedAllergies.includes(allergy) ? '#ffebee' : 'white',
-                                            borderColor: checkedAllergies.includes(allergy) ? '#d32f2f' : '#ccc'
+                                            backgroundColor: checkedAllergies.includes(allergy) ? '#ffebee' : 'transparent',
+                                            borderColor: checkedAllergies.includes(allergy) ? '#d32f2f' : '#8d6e63',
+                                            color: '#3e2723'
                                         }}>
                                             <input
                                                 type="checkbox"
                                                 checked={checkedAllergies.includes(allergy)}
                                                 onChange={() => handleAllergyToggle(allergy)}
-                                                style={{ width: '20px', height: '20px' }}
+                                                style={{ width: '18px', height: '18px' }}
                                             />
                                             {allergy}
                                         </label>
@@ -777,172 +769,69 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                             </div>
                         )}
 
-                        {/* Buttons */}
                         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
                             <button
                                 onClick={() => setIsOptionModalOpen(false)}
+                                className="wood-frame"
                                 style={{
                                     flex: 1,
-                                    padding: '1rem',
+                                    padding: '0.8rem',
                                     fontSize: '1.2rem',
-                                    border: '2px solid #555',
-                                    backgroundColor: 'white',
-                                    borderRadius: '8px',
-                                    fontFamily: 'Gamja Flower, cursive',
-                                    fontWeight: 'bold'
+                                    color: '#3e2723',
+                                    border: '4px solid #5d4037',
+                                    cursor: 'pointer'
                                 }}
                             >
                                 취소
                             </button>
                             <button
                                 onClick={handleAddToCart}
+                                className="wood-sign"
                                 style={{
                                     flex: 1,
-                                    padding: '1rem',
+                                    padding: '0.8rem',
                                     fontSize: '1.2rem',
                                     border: 'none',
-                                    backgroundColor: '#2e7d32',
-                                    color: 'white',
-                                    borderRadius: '8px',
-                                    fontFamily: 'Gamja Flower, cursive',
-                                    fontWeight: 'bold'
+                                    cursor: 'pointer'
                                 }}
                             >
-                                확인
+                                담기
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* 5. Cart Modal */}
             {isCartModalOpen && (
                 <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    zIndex: 300,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '1rem'
+                    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                    backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 150,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'
                 }}>
-                    <div className="hanji-background" style={{
-                        width: '100%',
-                        maxWidth: '400px',
-                        backgroundColor: '#fdfbf7',
-                        border: '4px solid #2e7d32',
-                        borderRadius: '12px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        maxHeight: '90vh' // Max height for scrolling
+                    <div className="paper-sheet" style={{
+                        width: '100%', maxWidth: '400px', padding: '2rem',
+                        display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative'
                     }}>
-                        <div style={{
-                            padding: '1.5rem',
-                            textAlign: 'center',
-                            borderBottom: '2px solid #2e7d32'
-                        }}>
-                            <h2 style={{ fontFamily: 'Gamja Flower, cursive', fontSize: '2rem', margin: 0, color: '#2e7d32' }}>주문 내역</h2>
-                        </div>
+                        <div className="paper-pin" style={{ top: '10px', left: '10px' }}></div>
+                        <div className="paper-pin" style={{ top: '10px', right: '10px' }}></div>
 
-                        <div style={{
-                            padding: '1.5rem',
-                            overflowY: 'auto',
-                            flex: 1
-                        }}>
-                            {cart.length === 0 ? (
-                                <div style={{ textAlign: 'center', color: '#888', padding: '2rem' }}>장바구니가 비어있습니다.</div>
-                            ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                    {cart.map((cartItem, index) => (
-                                        <div key={cartItem.uid} style={{
-                                            borderBottom: '1px dashed #ccc',
-                                            paddingBottom: '0.5rem',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center'
-                                        }}>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.2rem' }}>
-                                                    <span>{cartItem.name}</span>
-                                                    <span>{cartItem.price.toLocaleString()}₩</span>
-                                                </div>
-                                                {(cartItem.options.spiciness || (cartItem.options.allergies && cartItem.options.allergies.length > 0)) && (
-                                                    <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.3rem' }}>
-                                                        {cartItem.options.spiciness && <span style={{ marginRight: '0.5rem' }}>🔥 맵기: {cartItem.options.spiciness}단계</span>}
-                                                        {cartItem.options.allergies && <span>⚠️ 제외: {cartItem.options.allergies.join(', ')}</span>}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <button
-                                                onClick={() => handleRemoveItem(cartItem.uid)}
-                                                style={{
-                                                    marginLeft: '0.5rem',
-                                                    background: 'none',
-                                                    border: 'none',
-                                                    fontSize: '1.2rem',
-                                                    cursor: 'pointer',
-                                                    padding: '0.5rem',
-                                                    color: '#d32f2f'
-                                                }}
-                                                aria-label="메뉴 삭제"
-                                            >
-                                                ❌
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        <div style={{
-                            padding: '1.5rem',
-                            backgroundColor: 'rgba(46, 125, 50, 0.1)',
-                            borderTop: '2px solid #2e7d32'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#1b5e20' }}>
-                                <span>총 금액</span>
-                                <span>{totalPrice.toLocaleString()}₩</span>
+                        <h2 style={{ textAlign: 'center', fontFamily: 'Gamja Flower, cursive', fontSize: '1.8rem', color: '#3e2723' }}>현재 장바구니</h2>
+                        {cart.length === 0 ? (
+                            <div style={{ textAlign: 'center', color: '#aaa', padding: '1rem' }}>비어있음</div>
+                        ) : (
+                            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                {cart.map(item => (
+                                    <div key={item.uid} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', borderBottom: '1px dashed #ccc' }}>
+                                        <span>{item.name}</span>
+                                        <span>{item.price.toLocaleString()}</span>
+                                        <button onClick={() => handleRemoveItem(item.uid)} style={{ color: 'red', border: 'none', background: 'none', marginLeft: '1rem', cursor: 'pointer' }}>x</button>
+                                    </div>
+                                ))}
                             </div>
-
-                            <div style={{ display: 'flex', gap: '1rem' }}>
-                                <button
-                                    onClick={() => setIsCartModalOpen(false)}
-                                    style={{
-                                        flex: 1,
-                                        padding: '1rem',
-                                        fontSize: '1.2rem',
-                                        border: '2px solid #555',
-                                        backgroundColor: 'white',
-                                        borderRadius: '8px',
-                                        fontFamily: 'Gamja Flower, cursive',
-                                        fontWeight: 'bold'
-                                    }}
-                                >
-                                    닫기
-                                </button>
-                                <button
-                                    onClick={handlePlaceOrder}
-                                    disabled={cart.length === 0}
-                                    style={{
-                                        flex: 1,
-                                        padding: '1rem',
-                                        fontSize: '1.2rem',
-                                        border: 'none',
-                                        backgroundColor: cart.length > 0 ? '#2e7d32' : '#ccc',
-                                        color: 'white',
-                                        borderRadius: '8px',
-                                        fontFamily: 'Gamja Flower, cursive',
-                                        fontWeight: 'bold',
-                                        cursor: cart.length > 0 ? 'pointer' : 'not-allowed'
-                                    }}
-                                >
-                                    주문
-                                </button>
-                            </div>
+                        )}
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                            <button onClick={() => setIsCartModalOpen(false)} className="wood-frame" style={{ flex: 1, padding: '0.8rem', cursor: 'pointer', border: '4px solid #5d4037' }}>닫기</button>
+                            <button onClick={handlePlaceOrder} className="wood-sign" style={{ flex: 1, padding: '0.8rem', border: 'none', cursor: 'pointer' }}>주문하기</button>
                         </div>
                     </div>
                 </div>
