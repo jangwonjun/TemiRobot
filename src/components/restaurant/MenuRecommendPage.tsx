@@ -92,8 +92,8 @@ export default function MenuRecommendPage({ onBack }: MenuRecommendPageProps) {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          maxWidth: '500px',
-          minHeight: '550px'
+          maxWidth: '380px', // Reduced from 500px
+          minHeight: '480px' // Reduced from 550px
         }}>
           {/* Pins */}
           <div className="paper-pin" style={{ top: '10px', left: '10px' }}></div>
@@ -103,7 +103,7 @@ export default function MenuRecommendPage({ onBack }: MenuRecommendPageProps) {
 
           {/* Image Frame */}
           <div style={{
-            width: '100%',
+            width: '80%', // Reduced from 100%
             aspectRatio: '1/1',
             borderRadius: '8px',
             overflow: 'hidden',
@@ -128,7 +128,7 @@ export default function MenuRecommendPage({ onBack }: MenuRecommendPageProps) {
 
           {/* Title & Price */}
           <h2 style={{
-            fontSize: '2.5rem',
+            fontSize: '2rem', // Slightly smaller font
             fontFamily: 'Gamja Flower, cursive',
             color: '#3e2723',
             marginBottom: '0.5rem',
@@ -138,7 +138,7 @@ export default function MenuRecommendPage({ onBack }: MenuRecommendPageProps) {
           </h2>
 
           <div style={{
-            fontSize: '1.8rem',
+            fontSize: '1.5rem', // Slightly smaller font
             fontWeight: 'bold',
             color: '#d84315',
             marginBottom: '1rem'
@@ -148,12 +148,12 @@ export default function MenuRecommendPage({ onBack }: MenuRecommendPageProps) {
 
           {/* Description */}
           <p style={{
-            fontSize: '1.2rem',
+            fontSize: '1.1rem', // Slightly smaller font
             color: '#5d4037',
             fontFamily: 'Gowun Batang, serif',
             textAlign: 'center',
-            marginBottom: '2rem',
-            lineHeight: '1.5'
+            marginBottom: '1rem',
+            lineHeight: '1.4'
           }}>
             {currentItem.description}
           </p>
