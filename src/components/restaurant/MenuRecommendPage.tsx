@@ -1,89 +1,202 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import { MENU_ITEMS, MenuItem } from '@/data/menuData'
+import '@/app/restaurant/globals.css'
+
 interface MenuRecommendPageProps {
   onBack: () => void
 }
 
 export default function MenuRecommendPage({ onBack }: MenuRecommendPageProps) {
+  const [recommendedItems, setRecommendedItems] = useState<MenuItem[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  useEffect(() => {
+    // 1. Get Main items
+    const mainItems = MENU_ITEMS.filter(item => item.category === '메인')
+
+    // 2. Shuffle and pick 5
+    const shuffled = [...mainItems].sort(() => 0.5 - Math.random())
+    setRecommendedItems(shuffled.slice(0, 5))
+  }, [])
+
+  const handlePrev = () => {
+    setCurrentIndex(prev => (prev === 0 ? recommendedItems.length - 1 : prev - 1))
+  }
+
+  const handleNext = () => {
+    setCurrentIndex(prev => (prev === recommendedItems.length - 1 ? 0 : prev + 1))
+  }
+
+  // Loading state
+  if (recommendedItems.length === 0) {
+    return <div className="wood-background" />
+  }
+
+  const currentItem = recommendedItems[currentIndex]
+
   return (
-    <div className="hanji-background">
-      <div className="popup-overlay">
-        <div className="popup-content">
-          {/* 상단 타이틀 */}
-          <div style={{
-            fontSize: '1.5rem',
-            fontWeight: 'bold',
-            color: '#1a1a1a',
-            marginBottom: '2rem'
-          }}>
-            오늘의 레전드 메뉴
-          </div>
+    <div className="wood-background" style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      padding: '2rem'
+    }}>
+      <h1 className="wood-sign swing-hover" style={{
+        fontSize: '2.5rem',
+        marginBottom: '2rem',
+        padding: '1rem 3rem',
+        color: 'white',
+        textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+      }}>
+        오늘의 추천 메뉴 ({currentIndex + 1}/5)
+      </h1>
 
-          {/* 메뉴 이미지 */}
-          <div style={{
-            width: '200px',
-            height: '200px',
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '2rem',
+        width: '100%',
+        maxWidth: '800px',
+        justifyContent: 'center'
+      }}>
+        {/* Left Button */}
+        <button
+          onClick={handlePrev}
+          className="wood-frame"
+          style={{
+            width: '60px',
+            height: '60px',
             borderRadius: '50%',
+            fontSize: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            backgroundColor: '#efebe9',
+            border: '4px solid #5d4037',
+            color: '#3e2723'
+          }}
+        >
+          ←
+        </button>
+
+        {/* Card Content */}
+        <div className="paper-sheet" style={{
+          flex: 1,
+          padding: '2rem',
+          borderRadius: '4px',
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          maxWidth: '500px',
+          minHeight: '550px'
+        }}>
+          {/* Pins */}
+          <div className="paper-pin" style={{ top: '10px', left: '10px' }}></div>
+          <div className="paper-pin" style={{ top: '10px', right: '10px' }}></div>
+          <div className="paper-pin" style={{ bottom: '10px', left: '10px' }}></div>
+          <div className="paper-pin" style={{ bottom: '10px', right: '10px' }}></div>
+
+          {/* Image Frame */}
+          <div style={{
+            width: '100%',
+            aspectRatio: '1/1',
+            borderRadius: '8px',
             overflow: 'hidden',
-            margin: '0 auto 1.5rem',
-            border: '4px solid #fff',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+            border: '4px solid white',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+            marginBottom: '1.5rem',
+            backgroundColor: currentItem.imageColor || '#eee',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}>
-            <img
-              src="/images/menu/sundubu.png"
-              alt="해물 순두부"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover'
-              }}
-            />
+            {currentItem.imagePath ? (
+              <img
+                src={currentItem.imagePath}
+                alt={currentItem.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <span style={{ fontSize: '2rem' }}>사진 없음</span>
+            )}
           </div>
 
-          {/* 메뉴 이름 */}
+          {/* Title & Price */}
+          <h2 style={{
+            fontSize: '2.5rem',
+            fontFamily: 'Gamja Flower, cursive',
+            color: '#3e2723',
+            marginBottom: '0.5rem',
+            textAlign: 'center'
+          }}>
+            {currentItem.name}
+          </h2>
+
           <div style={{
-            fontSize: '4rem',
+            fontSize: '1.8rem',
             fontWeight: 'bold',
-            color: '#1a1a1a',
-            marginBottom: '3rem',
-            fontFamily: 'Gamja Flower, cursive'
+            color: '#d84315',
+            marginBottom: '1rem'
           }}>
-            해물 순두부
+            {currentItem.price.toLocaleString()}₩
           </div>
 
-          {/* 할인 스티커 */}
-          <div style={{
-            position: 'absolute',
-            bottom: '20px',
-            right: '20px',
-            zIndex: 10
+          {/* Description */}
+          <p style={{
+            fontSize: '1.2rem',
+            color: '#5d4037',
+            fontFamily: 'Gowun Batang, serif',
+            textAlign: 'center',
+            marginBottom: '2rem',
+            lineHeight: '1.5'
           }}>
-            <div className="discount-sticker">
-              <span style={{ fontSize: '1.8rem' }}>-1000</span>
-              <span style={{ fontSize: '0.9rem' }}>(지금 주문시)</span>
-            </div>
-          </div>
+            {currentItem.description}
+          </p>
 
-          {/* 하단 버튼 */}
-          <div style={{ marginTop: '0rem' }}>
-            <button
-              onClick={onBack}
-              style={{
-                padding: '0.8rem 2rem',
-                backgroundColor: '#ecf0f1',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '1.2rem',
-                cursor: 'pointer',
-                color: '#2c3e50',
-                fontWeight: 'bold'
-              }}
-            >
-              ← 메인으로
-            </button>
-          </div>
         </div>
+
+        {/* Right Button */}
+        <button
+          onClick={handleNext}
+          className="wood-frame"
+          style={{
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            fontSize: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            backgroundColor: '#efebe9',
+            border: '4px solid #5d4037',
+            color: '#3e2723'
+          }}
+        >
+          →
+        </button>
       </div>
+
+      <button
+        onClick={onBack}
+        className="wood-sign"
+        style={{
+          marginTop: '2rem',
+          padding: '1rem 3rem',
+          fontSize: '1.5rem',
+          cursor: 'pointer',
+          border: 'none',
+          color: 'white'
+        }}
+      >
+        메인으로 돌아가기
+      </button>
+
     </div>
   )
 }
