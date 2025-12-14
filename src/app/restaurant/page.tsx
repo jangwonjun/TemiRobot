@@ -28,7 +28,7 @@ export default function RestaurantPage() {
   const [currentPage, setCurrentPage] = useState<PageType>('main')
   const [selectedTable, setSelectedTable] = useState<number | null>(null)
   const [partySize, setPartySize] = useState<number>(1)
-  const [remainingSeats, setRemainingSeats] = useState<number>(8)
+  const [remainingSeats, setRemainingSeats] = useState<number>(4)
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([])
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
   const [isMoving, setIsMoving] = useState<boolean>(false)
