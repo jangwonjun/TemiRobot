@@ -7,9 +7,10 @@ interface MainPageProps {
   onMenuRecommend: () => void
   remainingSeats: number
   onResetSeats: () => void
+  onCallStaff: () => void
 }
 
-export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeats, onResetSeats }: MainPageProps) {
+export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeats, onResetSeats, onCallStaff }: MainPageProps) {
   const tables = [2, 4, 6, 8]
 
   return (
@@ -127,12 +128,36 @@ export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeat
           아들딸래미들 어여와 맛있게 만들어줄텡게
         </div>
 
+        {/* 직원 호출 버튼 */}
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '10px'
+        }}>
+          <button
+            onClick={onCallStaff}
+            className="recommend-btn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontSize: '1.8rem',
+              backgroundColor: '#ff7043',
+              color: 'white',
+              border: '2px solid #d84315'
+            }}
+          >
+            🛎️ 직원 호출
+          </button>
+        </div>
+
         {/* 중앙 추천 메뉴 (항아리/버튼) */}
         <div style={{
           flex: 1,
           display: 'flex',
           justifyContent: 'center',
-          marginBottom: '10px' // 약간 위로
+          marginBottom: '10px'
         }}>
           <button
             onClick={onMenuRecommend}
@@ -159,7 +184,7 @@ export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeat
           padding: '1rem',
           flexDirection: 'column',
           minWidth: '200px',
-          position: 'relative' // 버튼 배치를 위해
+          position: 'relative'
         }}>
           <div style={{ fontSize: '1.2rem', marginBottom: '0.2rem', color: '#ffccbc' }}>🪑 여석 안내 🪑</div>
           <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffab91' }}>

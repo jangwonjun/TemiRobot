@@ -10,6 +10,8 @@ import AutoReturnPage from '@/components/restaurant/AutoReturnPage'
 import MenuRecommendPage from '@/components/restaurant/MenuRecommendPage'
 import QRPage from '@/components/restaurant/QRPage'
 import { temi } from '@/lib/temi-api-unified'
+import StaffCallPage from '@/components/restaurant/StaffCallPage'
+import ReturningPage from '@/components/restaurant/ReturningPage'
 
 type PageType =
   | 'main'
@@ -19,6 +21,8 @@ type PageType =
   | 'qr'
   | 'auto-return'
   | 'menu-recommend'
+  | 'staff-call'
+  | 'returning'
 
 export default function RestaurantPage() {
   const [currentPage, setCurrentPage] = useState<PageType>('main')
@@ -91,24 +95,12 @@ export default function RestaurantPage() {
           }
         })
       } else {
-        // WebView가 아닌 경우 기존 API 사용 (Mock 환경)
-        const useMock = localStorage.getItem('temi_use_mock') !== 'false'
-        const TemiApi = useMock
-          ? (await import('@/lib/temi-api-mock')).default
-          : (await import('@/lib/temi-api')).default
-        const temiApi = new TemiApi()
-
-        const waypointId = `table-${seatNumber}-waypoint`
-        await temiApi.moveToLocation(waypointId)
-
-        const guideMessage = `${seatNumber}번 좌석으로 안내해드리겠습니다.`
-        await temiApi.speak(guideMessage)
-
-        // Mock 환경에서는 5초 후 완료
+        // Fallback or legacy/mock behavior
+        console.log('Temi API not available, using fallback simulation')
         setTimeout(() => {
           setIsMoving(false)
           setCurrentPage('move-complete')
-        }, 5000)
+        }, 3000)
       }
     } catch (error) {
       console.error('로봇 이동 실패:', error)
@@ -143,6 +135,20 @@ export default function RestaurantPage() {
     setPartySize(1)
   }
 
+  const handleCallStaff = () => {
+    setCurrentPage('staff-call')
+
+    // 3초 후 복귀중 페이지로
+    setTimeout(() => {
+      setCurrentPage('returning')
+
+      // 3초 후 메인으로
+      setTimeout(() => {
+        setCurrentPage('main')
+      }, 3000)
+    }, 3000)
+  }
+
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', position: 'fixed', top: 0, left: 0 }}>
       {currentPage === 'main' && (
@@ -151,6 +157,7 @@ export default function RestaurantPage() {
           onMenuRecommend={handleMenuRecommend}
           remainingSeats={remainingSeats}
           onResetSeats={handleResetSeats}
+          onCallStaff={handleCallStaff}
         />
       )}
       {currentPage === 'person-select' && (
@@ -186,6 +193,12 @@ export default function RestaurantPage() {
         <MenuRecommendPage
           onBack={handleBackToMain}
         />
+      )}
+      {currentPage === 'staff-call' && (
+        <StaffCallPage />
+      )}
+      {currentPage === 'returning' && (
+        <ReturningPage />
       )}
 
       {/* 커스텀 알림 메시지 */}

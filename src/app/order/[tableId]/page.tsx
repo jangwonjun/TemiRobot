@@ -11,13 +11,14 @@ interface MenuItem {
     name: string
     price: number
     description: string
-    imageColor: string
+    imageColor?: string // kept for fallback
+    imagePath?: string // New image path
     hasSpiciness?: boolean
-    availableAllergies?: string[] // e.g., ['새우', '갑각류', '계란', '메밀']
+    availableAllergies?: string[]
 }
 
 interface CartItem {
-    uid: string // unique id for list rendering
+    uid: string
     menuId: number
     name: string
     price: number
@@ -38,7 +39,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '해물 순두부찌개',
         price: 10000,
         description: '얼큰하고 시원한 국물이 일품인 팡씨네 대표 메뉴',
-        imageColor: '#e57373',
+        imagePath: '/images/menu/sundubu.png',
         hasSpiciness: true,
         availableAllergies: ['새우', '조개', '계란']
     },
@@ -48,7 +49,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '강된장 보리밥',
         price: 9000,
         description: '구수한 강된장과 신선한 야채의 조화',
-        imageColor: '#a1887f',
+        imagePath: '/images/menu/boribap.png',
         availableAllergies: ['대두', '참기름']
     },
     {
@@ -57,7 +58,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '육전',
         price: 15000,
         description: '계란옷 입혀 노릇하게 구워낸 소고기 육전',
-        imageColor: '#ffd54f',
+        imagePath: '/images/menu/yukjeon.png',
         availableAllergies: ['계란', '소고기']
     },
     {
@@ -66,7 +67,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '치즈 감자전',
         price: 13000,
         description: '바삭한 감자채와 고소한 치즈의 만남',
-        imageColor: '#fff176',
+        imagePath: '/images/menu/potato_pancake.png',
         availableAllergies: ['치즈', '감자']
     },
     {
@@ -75,7 +76,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '마약 옥수수전',
         price: 12000,
         description: '달콤 짭짤한 옥수수 알갱이가 톡톡 터지는 전',
-        imageColor: '#ffeb3b',
+        imagePath: '/images/menu/corn_pancake.png',
         availableAllergies: ['옥수수', '우유']
     },
     {
@@ -84,7 +85,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '두부김치',
         price: 16000,
         description: '따뜻한 손두부와 매콤달콤 볶음김치',
-        imageColor: '#ffcc80',
+        imagePath: '/images/menu/dubu_kimchi.png',
         availableAllergies: ['돼지고기', '두부', '참기름']
     },
     {
@@ -93,19 +94,29 @@ const MENU_ITEMS: MenuItem[] = [
         name: '차돌 된장찌개',
         price: 9000,
         description: '차돌박이가 듬뿍 들어간 구수한 시골 된장찌개',
-        imageColor: '#d7ccc8',
+        imagePath: '/images/menu/chadol_doenjang.png',
         hasSpiciness: true,
         availableAllergies: ['대두', '소고기']
     },
 
     // --- SIDE ---
     {
+        id: 25,
+        category: '사이드',
+        name: '옛날 떡볶이',
+        price: 6000,
+        description: '매콤달콤한 추억의 학교 앞 떡볶이',
+        imagePath: '/images/menu/tteokbokki.png',
+        hasSpiciness: true,
+        availableAllergies: ['밀가루', '대파']
+    },
+    {
         id: 4,
         category: '사이드',
         name: '메밀전병',
         price: 7000,
         description: '매콤한 김치소가 꽉 찬 메밀전병',
-        imageColor: '#ffb74d',
+        imagePath: '/images/menu/memil_jeon.png',
         availableAllergies: ['메밀', '김치', '돼지고기']
     },
     {
@@ -114,7 +125,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '계란후라이 (3개)',
         price: 3000,
         description: '들기름에 구워 더욱 고소한 반숙 후라이',
-        imageColor: '#fff9c4',
+        imagePath: '/images/menu/fried_eggs.png',
         availableAllergies: ['계란']
     },
     {
@@ -123,7 +134,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '스팸구이',
         price: 5000,
         description: '밥도둑 스팸을 노릇노릇하게 구워냈어요',
-        imageColor: '#f48fb1',
+        imagePath: '/images/menu/spam.png',
         availableAllergies: ['돼지고기']
     },
     {
@@ -132,7 +143,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '도토리묵 무침',
         price: 8000,
         description: '새콤달콤한 양념과 아삭한 오이의 조화',
-        imageColor: '#8d6e63',
+        imagePath: '/images/menu/acorn_jelly.png',
         availableAllergies: ['참기름', '견과류']
     },
 
@@ -143,6 +154,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '콜라',
         price: 2000,
         description: '코카콜라 355ml',
+        imagePath: '/images/menu/coke.png',
         imageColor: '#000000'
     },
     {
@@ -151,6 +163,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '제로 콜라',
         price: 2000,
         description: '부담 없는 코카콜라 제로 355ml',
+        imagePath: '/images/menu/zero_coke.png',
         imageColor: '#212121'
     },
     {
@@ -159,6 +172,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '사이다',
         price: 2000,
         description: '칠성사이다 355ml',
+        imagePath: '/images/menu/cider.png',
         imageColor: '#4caf50'
     },
     {
@@ -167,6 +181,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '환타 파인',
         price: 2000,
         description: '환타 파인애플맛 355ml',
+        imagePath: '/images/menu/fanta.png',
         imageColor: '#ff9800'
     },
 
@@ -177,6 +192,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '소주',
         price: 5000,
         description: '참이슬 / 처음처럼 / 진로 (택1 가능)',
+        imagePath: '/images/menu/soju.png',
         imageColor: '#81c784'
     },
     {
@@ -185,6 +201,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '생막걸리',
         price: 4000,
         description: '장수 생막걸리',
+        imagePath: '/images/menu/makgeolli.png',
         imageColor: '#f0f4c3'
     },
     {
@@ -193,6 +210,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: '병맥주',
         price: 5000,
         description: '테라 / 카스 (택1 가능)',
+        imagePath: '/images/menu/beer.png',
         imageColor: '#ffb74d'
     }
 ]
@@ -563,7 +581,7 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                         <div style={{
                             width: '100px',
                             height: '100px',
-                            backgroundColor: item.imageColor,
+                            backgroundColor: item.imageColor || '#eee',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -572,7 +590,15 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                             fontWeight: 'bold',
                             flexShrink: 0
                         }}>
-                            사진
+                            {item.imagePath ? (
+                                <img
+                                    src={item.imagePath}
+                                    alt={item.name}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                            ) : (
+                                <span>사진</span>
+                            )}
                         </div>
 
                         {/* Content Area */}
