@@ -19,6 +19,27 @@ export default function MenuRecommendPage({ onBack }: MenuRecommendPageProps) {
             오늘의 레전드 메뉴
           </div>
 
+          {/* 메뉴 이미지 */}
+          <div style={{
+            width: '200px',
+            height: '200px',
+            borderRadius: '50%',
+            overflow: 'hidden',
+            margin: '0 auto 1.5rem',
+            border: '4px solid #fff',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+          }}>
+            <img
+              src="/images/menu/sundubu.png"
+              alt="해물 순두부"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+            />
+          </div>
+
           {/* 메뉴 이름 */}
           <div style={{
             fontSize: '4rem',
@@ -44,7 +65,7 @@ export default function MenuRecommendPage({ onBack }: MenuRecommendPageProps) {
           </div>
 
           {/* 하단 버튼 */}
-          <div style={{ marginTop: '3rem' }}>
+          <div style={{ marginTop: '0rem' }}>
             <button
               onClick={onBack}
               style={{
@@ -66,4 +87,3 @@ export default function MenuRecommendPage({ onBack }: MenuRecommendPageProps) {
     </div>
   )
 }
-
