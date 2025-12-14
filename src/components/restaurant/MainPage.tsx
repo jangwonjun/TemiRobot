@@ -7,10 +7,9 @@ interface MainPageProps {
   onMenuRecommend: () => void
   remainingSeats: number
   onResetSeats: () => void
-  onCallStaff: () => void
 }
 
-export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeats, onResetSeats, onCallStaff }: MainPageProps) {
+export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeats, onResetSeats }: MainPageProps) {
   const tables = [2, 4, 6, 8]
 
   return (
@@ -128,30 +127,6 @@ export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeat
           아들딸래미들 어여와 맛있게 만들어줄텡게
         </div>
 
-        {/* 직원 호출 버튼 */}
-        <div style={{
-          flex: 1,
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: '10px'
-        }}>
-          <button
-            onClick={onCallStaff}
-            className="recommend-btn"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              fontSize: '1.8rem',
-              backgroundColor: '#ff7043',
-              color: 'white',
-              border: '2px solid #d84315'
-            }}
-          >
-            🛎️ 직원 호출
-          </button>
-        </div>
-
         {/* 중앙 추천 메뉴 (항아리/버튼) */}
         <div style={{
           flex: 1,
@@ -214,7 +189,7 @@ export default function MainPage({ onTableSelect, onMenuRecommend, remainingSeat
           </button>
         </div>
       </div>
-      
+
       {/* VersionInfo 추가 - 초기화면에만 표시 */}
       <VersionInfo />
     </div>

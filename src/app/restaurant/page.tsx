@@ -138,11 +138,24 @@ export default function RestaurantPage() {
   const handleCallStaff = () => {
     setCurrentPage('staff-call')
 
-    // 3초 후 복귀중 페이지로
-    setTimeout(() => {
+    // 3초 후 복귀중 페이지로 + 실제 이동 로직
+    setTimeout(async () => {
       setCurrentPage('returning')
 
-      // 3초 후 메인으로
+      // Temi API를 사용하여 홈베이스(충전기)로 이동 명령
+      try {
+        if (temi.isAvailable()) {
+          // 메시지는 페이지에서 보여주므로 여기서는 silent하게 이동하거나 기본 메시지
+          await temi.goHome({
+            message: '원래 자리로 돌아갑니다.',
+            waitForArrival: false // 페이지 흐름은 시간 기반으로 처리
+          })
+        }
+      } catch (e) {
+        console.error('Failed to command return:', e)
+      }
+
+      // 3초 후 메인으로 (화면 전환)
       setTimeout(() => {
         setCurrentPage('main')
       }, 3000)
@@ -157,7 +170,6 @@ export default function RestaurantPage() {
           onMenuRecommend={handleMenuRecommend}
           remainingSeats={remainingSeats}
           onResetSeats={handleResetSeats}
-          onCallStaff={handleCallStaff}
         />
       )}
       {currentPage === 'person-select' && (
@@ -184,6 +196,7 @@ export default function RestaurantPage() {
         <QRPage
           tableNumber={selectedTable || 0}
           onHome={handleBackToMain}
+          onCallStaff={handleCallStaff}
         />
       )}
       {currentPage === 'auto-return' && (

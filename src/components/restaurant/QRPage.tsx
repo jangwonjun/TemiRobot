@@ -8,9 +8,10 @@ import { temi } from '@/lib/temi-api-unified'
 interface QRPageProps {
     tableNumber: number
     onHome: () => void
+    onCallStaff: () => void
 }
 
-export default function QRPage({ tableNumber, onHome }: QRPageProps) {
+export default function QRPage({ tableNumber, onHome, onCallStaff }: QRPageProps) {
     const [qrData, setQrData] = useState<string>('')
 
     useEffect(() => {
@@ -28,7 +29,7 @@ export default function QRPage({ tableNumber, onHome }: QRPageProps) {
     }, [tableNumber])
 
     const handleStaffCall = () => {
-        alert('직원을 호출했습니다. 잠시만 기다려주세요.')
+        onCallStaff()
     }
 
     // --- Payment / Sync Logic ---
@@ -75,9 +76,9 @@ export default function QRPage({ tableNumber, onHome }: QRPageProps) {
                     console.error('도크 복귀 실패:', error)
                 }
             }
-            
+
             returnToDock()
-            
+
             // 5초 후 홈으로 복귀
             const timer = setTimeout(() => {
                 onHome()
