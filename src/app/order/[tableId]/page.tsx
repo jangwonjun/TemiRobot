@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import '@/app/restaurant/globals.css'
 import { temi } from '@/lib/temi-api-unified'
 import { MENU_ITEMS, CATEGORIES, MenuItem, CartItem } from '@/data/menuData'
+import FinalCheckBubble from '@/components/restaurant/FinalCheckBubble'
 
 export default function OrderPage({ params }: { params: { tableId: string } }) {
     // View State: 'menu' | 'confirmation' | 'success'
@@ -22,6 +23,9 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
 
     // Cart Modal State
     const [isCartModalOpen, setIsCartModalOpen] = useState(false)
+
+    // Pangcae Final Check™ State
+    const [showFinalCheck, setShowFinalCheck] = useState(false)
 
     // Filter menu
     const filteredItems = MENU_ITEMS.filter(item => item.category === activeTab)
@@ -79,8 +83,37 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
         setView('confirmation')
     }
 
-    // Finalize Order
-    const handleFinalOrder = async () => {
+    // Pangcae Final Check™: 알러지 및 매운 정도 체크 함수
+    const checkAllergyAndSpicy = () => {
+        const allergyItems: string[] = []
+        let spicyCount = 0
+
+        cart.forEach(cartItem => {
+            const menuItem = MENU_ITEMS.find(item => item.id === cartItem.menuId)
+            if (menuItem) {
+                // 알러지 체크: 메뉴에 알러지 성분이 있고, 사용자가 제외하지 않은 경우
+                if (menuItem.availableAllergies && menuItem.availableAllergies.length > 0) {
+                    menuItem.availableAllergies.forEach(allergy => {
+                        // 사용자가 이 알러지를 제외하지 않았다면 포함된 것으로 간주
+                        if (!cartItem.options.allergies || !cartItem.options.allergies.includes(allergy)) {
+                            if (!allergyItems.includes(allergy)) {
+                                allergyItems.push(allergy)
+                            }
+                        }
+                    })
+                }
+                // 매운 정도 체크: spiciness >= 2인 경우
+                if (cartItem.options.spiciness && cartItem.options.spiciness >= 2) {
+                    spicyCount++
+                }
+            }
+        })
+
+        return { allergyItems, spicyCount, hasAllergy: allergyItems.length > 0, hasSpicy: spicyCount > 0 }
+    }
+
+    // 실제 주문 완료 함수 (분리)
+    const completeOrder = async () => {
         try {
             await fetch('/api/order/sync', {
                 method: 'POST',
@@ -102,10 +135,36 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
 
             setView('success')
             setCart([])
+            setShowFinalCheck(false)
         } catch (error) {
             console.error('Failed to sync order:', error)
             alert('주문 전송 중 오류가 발생했습니다.')
         }
+    }
+
+    // Finalize Order (Pangcae Final Check™ 로직 포함)
+    const handleFinalOrder = async () => {
+        // Pangcae Final Check™ 로직
+        const { hasAllergy, hasSpicy } = checkAllergyAndSpicy()
+
+        // 체크 필요 시 말풍선 표시, 아니면 바로 주문
+        if (hasAllergy || hasSpicy) {
+            setShowFinalCheck(true)
+        } else {
+            await completeOrder()
+        }
+    }
+
+    // 말풍선 확인 핸들러
+    const handleFinalCheckConfirm = () => {
+        setShowFinalCheck(false)
+        completeOrder()
+    }
+
+    // 말풍선 수정 핸들러
+    const handleFinalCheckEdit = () => {
+        setShowFinalCheck(false)
+        setView('menu')
     }
 
     const handleAddMore = () => {
@@ -118,6 +177,9 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
 
     // --- RENDER: CONFIRMATION VIEW ---
     if (view === 'confirmation') {
+        // 알러지 및 매운 정도 계산 (말풍선용)
+        const { allergyItems, spicyCount, hasAllergy, hasSpicy } = checkAllergyAndSpicy()
+
         return (
             <div className="wood-background" style={{
                 minHeight: '100vh',
@@ -230,6 +292,18 @@ export default function OrderPage({ params }: { params: { tableId: string } }) {
                         </button>
                     </div>
                 </div>
+
+                {/* Pangcae Final Check™ 말풍선 */}
+                {showFinalCheck && (
+                    <FinalCheckBubble
+                        hasAllergy={hasAllergy}
+                        hasSpicy={hasSpicy}
+                        allergyItems={allergyItems}
+                        spicyCount={spicyCount}
+                        onConfirm={handleFinalCheckConfirm}
+                        onEdit={handleFinalCheckEdit}
+                    />
+                )}
             </div>
         )
     }

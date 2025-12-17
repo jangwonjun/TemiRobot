@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         
         webView = findViewById(R.id.webview);
         
+        // WebView 배경을 투명하게 설정 (검은 배경 제거)
+        webView.setBackgroundColor(0x00000000); // 완전 투명
+        
         // WebView 설정
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);

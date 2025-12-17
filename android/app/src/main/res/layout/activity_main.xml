@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#1a2332">
+    android:background="@android:color/transparent">
 
     <WebView
         android:id="@+id/webview"
