@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation'
 import { QRCodeSVG } from 'qrcode.react'
 import React, { useState, useEffect } from 'react'
 import { temi } from '@/lib/temi-api-unified'
+import FinalCheckBubble from '@/components/restaurant/FinalCheckBubble'
+import { MENU_ITEMS } from '@/data/menuData'
 
 interface QRPageProps {
     tableNumber: number
@@ -35,6 +37,9 @@ export default function QRPage({ tableNumber, onHome, onCallStaff }: QRPageProps
     // --- Payment / Sync Logic ---
     const [view, setView] = React.useState<'qr' | 'payment' | 'returning'>('qr')
     const [receivedOrder, setReceivedOrder] = React.useState<any>(null)
+    
+    // Pangcae Final Check™ State
+    const [showFinalCheck, setShowFinalCheck] = React.useState(false)
 
     // Poll for orders
     React.useEffect(() => {
@@ -87,16 +92,73 @@ export default function QRPage({ tableNumber, onHome, onCallStaff }: QRPageProps
         }
     }, [view, onHome])
 
-    const handlePaymentComplete = async () => {
-        // Temi에서 결제 확인 버튼 클릭 시 처리
-        // 주문 동기화 삭제하고 도크로 복귀
+    // Pangcae Final Check™: 알러지 및 매운 정도 체크 함수
+    const checkAllergyAndSpicy = () => {
+        if (!receivedOrder || !receivedOrder.items) {
+            return { allergyItems: [], spicyCount: 0, hasAllergy: false, hasSpicy: false }
+        }
+
+        const allergyItems: string[] = []
+        let spicyCount = 0
+
+        receivedOrder.items.forEach((cartItem: any) => {
+            const menuItem = MENU_ITEMS.find(item => item.id === cartItem.menuId)
+            if (menuItem) {
+                // 알러지 체크: 메뉴에 알러지 성분이 있고, 사용자가 제외하지 않은 경우
+                if (menuItem.availableAllergies && menuItem.availableAllergies.length > 0) {
+                    menuItem.availableAllergies.forEach(allergy => {
+                        // 사용자가 이 알러지를 제외하지 않았다면 포함된 것으로 간주
+                        if (!cartItem.options?.allergies || !cartItem.options.allergies.includes(allergy)) {
+                            if (!allergyItems.includes(allergy)) {
+                                allergyItems.push(allergy)
+                            }
+                        }
+                    })
+                }
+                // 매운 정도 체크: spiciness >= 2인 경우
+                if (cartItem.options?.spiciness && cartItem.options.spiciness >= 2) {
+                    spicyCount++
+                }
+            }
+        })
+
+        return { allergyItems, spicyCount, hasAllergy: allergyItems.length > 0, hasSpicy: spicyCount > 0 }
+    }
+
+    // 실제 결제 완료 함수 (분리)
+    const completePayment = async () => {
         try {
             await fetch(`/api/order/sync?tableId=${tableNumber}`, { method: 'DELETE' })
             // 결제 확인 완료 후 도크로 복귀 화면으로 이동
             setView('returning')
+            setShowFinalCheck(false)
         } catch (error) {
             console.error('결제 확인 처리 실패:', error)
         }
+    }
+
+    const handlePaymentComplete = async () => {
+        // Pangcae Final Check™ 로직
+        const { hasAllergy, hasSpicy } = checkAllergyAndSpicy()
+
+        // 체크 필요 시 말풍선 표시, 아니면 바로 결제 완료
+        if (hasAllergy || hasSpicy) {
+            setShowFinalCheck(true)
+        } else {
+            await completePayment()
+        }
+    }
+
+    // 말풍선 확인 핸들러
+    const handleFinalCheckConfirm = () => {
+        setShowFinalCheck(false)
+        completePayment()
+    }
+
+    // 말풍선 수정 핸들러 (결제 화면에서는 취소로 처리)
+    const handleFinalCheckEdit = () => {
+        setShowFinalCheck(false)
+        setView('qr') // QR 화면으로 돌아가기
     }
 
     if (view === 'returning') {
@@ -125,6 +187,9 @@ export default function QRPage({ tableNumber, onHome, onCallStaff }: QRPageProps
     }
 
     if (view === 'payment' && receivedOrder) {
+        // 알러지 및 매운 정도 계산 (말풍선용)
+        const { allergyItems, spicyCount, hasAllergy, hasSpicy } = checkAllergyAndSpicy()
+
         return (
             <div className="hanji-background" style={{
                 height: '100vh',
@@ -133,7 +198,8 @@ export default function QRPage({ tableNumber, onHome, onCallStaff }: QRPageProps
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '2rem',
-                fontFamily: 'Gowun Batang, serif'
+                fontFamily: 'Gowun Batang, serif',
+                position: 'relative'
             }}>
                 <h1 style={{ fontFamily: 'Gamja Flower, cursive', fontSize: '3rem', color: '#2e7d32', marginBottom: '2rem' }}>
                     주문 내역 확인 & 결제
@@ -153,7 +219,15 @@ export default function QRPage({ tableNumber, onHome, onCallStaff }: QRPageProps
                                 borderBottom: '1px dashed #ccc', padding: '1rem 0',
                                 fontSize: '1.5rem'
                             }}>
-                                <span>{item.name} x 1</span>
+                                <div>
+                                    <span>{item.name} x 1</span>
+                                    {(item.options?.spiciness || (item.options?.allergies && item.options.allergies.length > 0)) && (
+                                        <div style={{ fontSize: '1rem', color: '#6d4c41', marginTop: '0.3rem' }}>
+                                            {item.options.spiciness && <span style={{ marginRight: '0.5rem' }}>🔥 맵기: {item.options.spiciness}단계</span>}
+                                            {item.options.allergies && <span>⚠️ 제외: {item.options.allergies.join(', ')}</span>}
+                                        </div>
+                                    )}
+                                </div>
                                 <span>{item.price.toLocaleString()}₩</span>
                             </div>
                         ))}
@@ -203,6 +277,18 @@ export default function QRPage({ tableNumber, onHome, onCallStaff }: QRPageProps
                         취소
                     </button>
                 </div>
+
+                {/* Pangcae Final Check™ 말풍선 */}
+                {showFinalCheck && (
+                    <FinalCheckBubble
+                        hasAllergy={hasAllergy}
+                        hasSpicy={hasSpicy}
+                        allergyItems={allergyItems}
+                        spicyCount={spicyCount}
+                        onConfirm={handleFinalCheckConfirm}
+                        onEdit={handleFinalCheckEdit}
+                    />
+                )}
             </div>
         )
     }
