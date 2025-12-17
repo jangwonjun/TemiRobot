@@ -394,15 +394,16 @@ export class TemiAPI {
     // 참고: 테미 로봇의 원위치 waypoint 이름을 확인하여 수정하세요
     const homeLocation = "home" // 또는 "0" 또는 다른 원위치 waypoint
 
-    const guideMessage = message || "원위치로 돌아가겠습니다."
-
     try {
       if (!this.isAvailable()) {
         throw new Error('TemiInterface is not available.')
       }
 
-      // 1. 안내 메시지
-      await this.speak(guideMessage)
+      // 1. 안내 메시지 (message가 명시적으로 제공된 경우에만)
+      // message가 없으면 검은 화면 메시지 없이 조용히 이동
+      if (message) {
+        await this.speak(message)
+      }
 
       // 2. 원위치로 이동 (직접 window.temi.goTo 호출 - "1"-"4" 검증 우회)
       if (typeof window !== 'undefined' && window.temi) {

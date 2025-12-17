@@ -145,9 +145,8 @@ export default function RestaurantPage() {
       // Temi API를 사용하여 홈베이스(충전기)로 이동 명령
       try {
         if (temi.isAvailable()) {
-          // 메시지는 페이지에서 보여주므로 여기서는 silent하게 이동하거나 기본 메시지
+          // 검은 화면 메시지 없이 조용히 이동
           await temi.goHome({
-            message: '원래 자리로 돌아갑니다.',
             waitForArrival: false // 페이지 흐름은 시간 기반으로 처리
           })
         }

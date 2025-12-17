@@ -69,10 +69,9 @@ export default function QRPage({ tableNumber, onHome, onCallStaff }: QRPageProps
             const returnToDock = async () => {
                 try {
                     if (temi.isAvailable()) {
-                        // 2초 후 도크로 이동 (메시지를 먼저 보여주기 위해)
+                        // 2초 후 도크로 이동 (검은 화면 메시지 없이 이동만)
                         setTimeout(async () => {
                             await temi.goHome({
-                                message: "결제가 완료되었습니다. 도크로 돌아가겠습니다.",
                                 waitForArrival: false // 도착 감지 없이 이동만
                             })
                         }, 2000)
